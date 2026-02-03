@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,6 +38,10 @@ fun ListScreen() {
     }
     LazyColumn (modifier=Modifier.background(Color.White).padding(16.dp)){
         items(allKantoPokemon) { item ->
+            Row {
+                Text(text = item.number.toString())
+                Text(text = item.number )
+            }
             Text(text = item.name)
 
         }
