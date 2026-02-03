@@ -187,7 +187,7 @@ class MainActivity : ComponentActivity() {
 
 
             @Composable
-            fun ListScreen(name: String, modifier: Modifier = Modifier) {
+            fun Greeting(name: String, modifier: Modifier = Modifier) {
                 Text(
                     text = "Hello $name!",
                     modifier = modifier
@@ -205,3 +205,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
