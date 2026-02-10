@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.a519lablearnandroid.ui.theme._519LabLearnAndroidTheme
 
 class LitsMainActivity : ComponentActivity() {
@@ -33,33 +34,21 @@ class LitsMainActivity : ComponentActivity() {
 
 @Composable
 fun ListScreen() {
-    Column (modifier=Modifier.background(Color.Red).padding(16.dp)){
-        Column (modifier=Modifier.background(Color.Gray).padding(16.dp)) {  }
-    }
-    LazyColumn (modifier=Modifier.background(Color.White).padding(16.dp)){
-        items(allKantoPokemon) { item ->
-            Row {
-                Text(text = item.number.toString())
-                Text(text = item.number )
+    Column(modifier = Modifier.background(Color.Red).padding(16.dp)) {
+        Column(modifier = Modifier.background(Color.Gray).padding(16.dp)) {
+            LazyColumn(modifier = Modifier.fillMaxSize().background(Color.White).padding(16.dp)) {
+                items(allKantoPokemon){ item ->
+                    Text(text = item.number.toString() + " " + item.name, fontSize = 30.sp)
+                }
             }
-            Text(text = item.name)
-
         }
-
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-
 }
 
 data class Pokemon(
     val name: String,
     val number: Int
 )
-
 val allKantoPokemon = listOf(
     Pokemon("Bulbasaur", 1),
     Pokemon("Ivysaur", 2),
@@ -97,5 +86,11 @@ val allKantoPokemon = listOf(
     Pokemon("Nidoking", 34),
     Pokemon("Clefairy", 35),
 )
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    ListScreen()
+}
 
 // Tips: for image : https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-iii/firered-leafgreen/1.png

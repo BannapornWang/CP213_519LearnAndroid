@@ -82,25 +82,24 @@ class MainActivity : ComponentActivity() {
                 var agi by remember { mutableStateOf(10) }
                 var int by remember { mutableStateOf(15) }
                 Row(
-                    modifier = Modifier.fillMaxWidth().background(color = Color.White)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color.White)
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
-                    Column(modifier = Modifier.padding(top = 8.dp))
-                    {
-
-                        Button(onClick = {
-                            str = str + 1
-                        })
-                        {
+                    // Str Column
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(onClick = { str = str + 1 }) {
                             Image(
                                 painter = painterResource(id = R.drawable.outline_arrow_drop_up_24),
                                 contentDescription = "up",
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-
                         Text(text = "Str", fontSize = 32.sp)
                         Text(text = str.toString(), fontSize = 32.sp)
                         Button(onClick = { str-- }) {
@@ -110,29 +109,20 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-//                        Text(
-//                            text = "-",
-//                            fontSize = 32.sp,
-//                            modifier = Modifier.clickable {
-//                                str --
-//                            }
-//                        )
-
                     }
-                    Column(modifier = Modifier.padding(top = 8.dp))
-                    {
 
-                        Button(onClick = {
-                            agi = agi + 1
-                        })
-                        {
+                    // Agi Column
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(onClick = { agi = agi + 1 }) {
                             Image(
                                 painter = painterResource(id = R.drawable.outline_arrow_drop_up_24),
                                 contentDescription = "up",
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-
                         Text(text = "Agi", fontSize = 32.sp)
                         Text(text = agi.toString(), fontSize = 32.sp)
                         Button(onClick = { agi-- }) {
@@ -142,67 +132,54 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.size(20.dp)
                             )
                         }
-
-                        Column(modifier = Modifier.padding(top = 8.dp))
-                        {
-                            Button(onClick = {
-                                int = int + 1
-                            })
-                            {
-                                Image(
-                                    painter = painterResource(id = R.drawable.outline_arrow_drop_up_24),
-                                    contentDescription = "up",
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            Text(text = "Int", fontSize = 32.sp)
-                            Text(text = int.toString(), fontSize = 32.sp)
-                            Button(onClick = { int-- }) {
-                                Image(
-                                    painter = painterResource(R.drawable.outline_arrow_drop_down_24),
-                                    contentDescription = "down",
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-//                    Column {
-//                        Text(text = "Agi: ", fontSize = 32.sp)
-//                        Text(text = agi.toString(),fontSize = 32.sp)
-//
-//                    }
-//                    Column {
-//                        Text(text = "Int:", fontSize = 32.sp)
-//                        Text(text = "C", fontSize = 32.sp)
-//                    }
-
-
-                        }
-
-
                     }
 
+                    // Int Column
+                    Column(
+                        modifier = Modifier.padding(top = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Button(onClick = { int = int + 1 }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.outline_arrow_drop_up_24),
+                                contentDescription = "up",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Text(text = "Int", fontSize = 32.sp)
+                        Text(text = int.toString(), fontSize = 32.sp)
+                        Button(onClick = { int-- }) {
+                            Image(
+                                painter = painterResource(R.drawable.outline_arrow_drop_down_24),
+                                contentDescription = "down",
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
                 }
-            }
 
 
 
-            @Composable
-            fun Greeting(name: String, modifier: Modifier = Modifier) {
-                Text(
-                    text = "Hello $name!",
-                    modifier = modifier
-                )
-            }
+                @Composable
+                fun Greeting(name: String, modifier: Modifier = Modifier) {
+                    Text(
+                        text = "Hello $name!",
+                        modifier = modifier
+                    )
+                }
 
-//            @Preview(showBackground = true)
-            @Composable
+                //            @Preview(showBackground = true)
+                @Composable
 
-            fun GreetingPreview() {
-                _519LabLearnAndroidTheme {
-                    Greeting("Android")
+                fun GreetingPreview() {
+                    _519LabLearnAndroidTheme {
+                        Greeting("Android")
+                    }
                 }
             }
         }
     }
 }
+
+
 
