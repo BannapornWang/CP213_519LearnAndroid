@@ -2,4 +2,5 @@
     <string name="app_name">519LabLearnAndroid</string>
     <string name="title_activity_main2">MainActivity2</string>
     <string name="title_activity_lits_main">LitsMainActivity</string>
+    <string name="title_activity_menu">MenuActivity</string>
 </resources>
