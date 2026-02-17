@@ -1,5 +1,6 @@
 package com.example.a519lablearnandroid
 
+
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,31 +14,46 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
 class MenuActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+
                 Button(onClick = {
-                    startActivity(Intent(this@MenuActivity, RPGCardActivity::class.java))
+                    startActivity(
+                        Intent(this@MenuActivity, RPGCardActivity::class.java)
+                    )
                 }) {
-                    Text("RPGCardActivity")
+                    Text(text = "RPGCardActivity")
                 }
+
                 Button(onClick = {
-                    startActivity(Intent(this@MenuActivity, PokedexActivity::class.java))
+                    startActivity(
+                        Intent(this@MenuActivity, PokedexActivity::class.java)
+                    )
                 }) {
-                    Text("PokedexActivity")
+                    Text(text = "PokedexActivity")
                 }
+
                 Button(onClick = {
-                    startActivity(Intent(this@MenuActivity, LifeCycleComposeActivity::class.java))
+                    startActivity(
+                        Intent(this@MenuActivity, LifeCycleComposeActivity::class.java)
+                    )
                 }) {
-                    Text("LifeCycleComposeActivity")
+                    Text(text = "LifeCycleComposeActivity")
                 }
             }
         }
     }
 }
-
 
 

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
@@ -27,16 +26,17 @@ android {
             )
         }
     }
+    buildFeatures {
+        compose = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-    buildFeatures {
-        compose = true
-    }
+}
+
+kotlin {
+    jvmToolchain(11)
 }
 
 dependencies {
@@ -58,6 +58,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.coil.compose)
+
+
+    implementation("io.coil-kt:coil-compose:2.5.0")
+        // Retrofit สำหรับคุยกับ Server
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+        // Converter สำหรับแปลง JSON เป็น Data Class (Gson)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+        // Lifecycle & ViewModel สำหรับ Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.a519lablearnandroid
 
+
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,17 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -51,15 +43,12 @@ fun LifecycleDemo(modifier: Modifier = Modifier) {
 
 @Composable
 fun LifecycleComponent() {
-    // State สำหรับ Recomposition
     var text by remember { mutableStateOf("") }
 
-    // Log เมื่อ Recompose
     SideEffect {
         Log.d("ComposeLifecycle", "Recompose: $text")
     }
 
-    // Log เมื่อ Enter/Leave
     DisposableEffect(Unit) {
         Log.d("ComposeLifecycle", "Enter Composition")
         onDispose {
@@ -79,6 +68,6 @@ fun LifecycleComponent() {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview2() {
+fun PreviewLifecycle() {
     LifecycleDemo()
 }
