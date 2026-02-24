@@ -32,14 +32,7 @@ class SharedPreferencesActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             _519LabLearnAndroidTheme() {
-                {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        Greeting(
-                            name = name,
-                            modifier = Modifier.padding(innerPadding)
-                        )
-                    }
-                }
+
             }
         }
     }
