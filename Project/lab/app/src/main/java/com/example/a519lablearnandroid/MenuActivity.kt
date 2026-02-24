@@ -1,5 +1,6 @@
 package com.example.a519lablearnandroid
 
+// checking 24/2/2026
 
 import android.content.Intent
 import android.os.Bundle
@@ -51,9 +52,15 @@ class MenuActivity : ComponentActivity() {
                 }) {
                     Text(text = "LifeCycleComposeActivity")
                 }
+
+                Button(onClick = {
+                    startActivity(
+                        Intent(this@MenuActivity, SharedPreferencesActivity::class.java)
+                    )
+                }) {
+                    Text(text = "SharedPreferencesActivity")
+                }
             }
         }
     }
 }
-
-

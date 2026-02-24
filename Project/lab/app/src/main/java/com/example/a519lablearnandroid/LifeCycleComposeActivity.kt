@@ -1,6 +1,5 @@
 package com.example.a519lablearnandroid
 
-
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity

@@ -1,5 +1,6 @@
 package com.example.a519lablearnandroid
 
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a519lablearnandroid.Util.PokemonEntry
@@ -14,6 +15,11 @@ class PokemonViewModel : ViewModel() {
     // ในที่นี้เอาแบบง่ายสุดคือเก็บ List ของโปเกมอน
     private val _pokemonList = MutableStateFlow<List<PokemonEntry>>(emptyList())
     val pokemonList = _pokemonList.asStateFlow()
+
+
+    init {
+        fetchPokemon()
+    }
 
     // ฟังก์ชันยิง API
     fun fetchPokemon() {
