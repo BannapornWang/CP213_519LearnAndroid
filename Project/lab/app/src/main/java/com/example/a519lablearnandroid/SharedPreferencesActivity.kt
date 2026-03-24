@@ -1,18 +1,15 @@
 package com.example.a519lablearnandroid
 
-import com.example.a519lablearnandroid.Util.SharedPreferencesUtil
-import com.example.a519lablearnandroid.ui.theme._519LabLearnAndroidTheme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.a519lablearnandroid.Util.SharedPreferencesUtil
+import com.example.a519lablearnandroid.ui.theme._519LabLearnAndroidTheme
 
 
 class SharedPreferencesActivity : ComponentActivity() {
@@ -26,12 +23,10 @@ class SharedPreferencesActivity : ComponentActivity() {
 //        SharedPreferencesUtil.saveBoolean("is_dark_mode", true)
 
 // การดึงค่ามาใช้งาน (เช่น เมื่อเปิดแอพขึ้นมาใหม่)
-        val name = SharedPreferencesUtil.getString("user_name")
-        val darkMode = SharedPreferencesUtil.getBoolean("is_dark_mode")
 
         enableEdgeToEdge()
         setContent {
-            _519LabLearnAndroidTheme() {
+            _519LabLearnAndroidTheme {
 
             }
         }
@@ -48,7 +43,7 @@ class SharedPreferencesActivity : ComponentActivity() {
     @Preview(showBackground = true)
     @Composable
     fun GreetingPreview() {
-        _519LabLearnAndroidTheme() {
+        _519LabLearnAndroidTheme {
             Greeting("Android")
         }
     }

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -56,6 +59,11 @@
             android:name=".GalleryActivity"
             android:exported="false"
             android:label="Gallery &amp; Permission"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".SensorCameraActivity"
+            android:exported="false"
+            android:label="Sensor &amp; Camera"
             android:theme="@style/Theme._519LabLearnAndroid" />
     </application>
 

@@ -3,12 +3,14 @@ package com.example.a519lablearnandroid
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -37,6 +38,7 @@ import com.example.a519lablearnandroid.ui.theme._519LabLearnAndroidTheme
 
 class GalleryActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -51,14 +53,6 @@ class GalleryActivity : ComponentActivity() {
                     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
                     // 1) Launcher สำหรับขอ Permission อ่านรูปภาพ (Android 13+)
-                    val permissionLauncher = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.RequestPermission()
-                    ) { isGranted ->
-                        // ถ้าได้รับสิทธิ์แล้ว → เปิด Gallery ทันที
-                        // (เราต้องการ galleryLauncher ตรงนี้ แต่ Kotlin Compose ไม่รองรับ
-                        //  forward-reference ใน remember block ตรงๆ → ใช้ flag แทน)
-                        // ที่ง่ายที่สุดคือ reference จาก lambda สุดท้ายด้านล่าง
-                    }
 
                     // 2) Launcher สำหรับเปิด Gallery รับ Uri รูปภาพกลับมา
                     val galleryLauncher = rememberLauncherForActivityResult(

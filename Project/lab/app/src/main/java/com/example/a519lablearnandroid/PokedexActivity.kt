@@ -1,6 +1,7 @@
 package com.example.a519lablearnandroid
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -93,6 +94,7 @@ fun ListScreen(viewModel: PokemonViewModel) {
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun ListPreview() {
