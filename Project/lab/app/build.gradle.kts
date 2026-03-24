@@ -60,14 +60,14 @@ dependencies {
     implementation(libs.coil.compose)
 
 
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation(libs.coil.compose.v270)
         // Retrofit สำหรับคุยกับ Server
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation(libs.retrofit)
         // Converter สำหรับแปลง JSON เป็น Data Class (Gson)
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.converter.gson)
 
         // Lifecycle & ViewModel สำหรับ Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
 
 }
