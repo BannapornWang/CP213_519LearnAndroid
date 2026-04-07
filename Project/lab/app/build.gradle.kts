@@ -50,7 +50,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.volley)
-    
+    implementation(libs.androidx.compose.remote.creation.compose)
+
     // Testing Dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito.core)

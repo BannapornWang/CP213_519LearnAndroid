@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,6 +18,71 @@
         android:supportsRtl="true"
         android:theme="@style/Theme._519LabLearnAndroid"
         tools:targetApi="31">
+        <activity
+            android:name=".Part12Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part12"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part11Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part11"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part10Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part10"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part9Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part9"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part8Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part8"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part7Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part7"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part7DetailActivity"
+            android:exported="false"
+            android:label="Detail Activity"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part6Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part6"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part5Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part5"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part4Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part4"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part2Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part2"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part3Activity"
+            android:exported="false"
+            android:label="@string/title_activity_part3"
+            android:theme="@style/Theme._519LabLearnAndroid" />
+        <activity
+            android:name=".Part1AnimationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_part1_animation"
+            android:theme="@style/Theme._519LabLearnAndroid" />
         <activity
             android:name=".SharedPreferencesActivity"
             android:exported="false"
@@ -54,7 +121,7 @@
             android:name=".RPGCardActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme._519LabLearnAndroid"></activity>
+            android:theme="@style/Theme._519LabLearnAndroid" />
         <activity
             android:name=".GalleryActivity"
             android:exported="false"
