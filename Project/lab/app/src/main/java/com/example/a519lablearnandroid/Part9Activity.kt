@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,16 +15,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,10 +35,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,150 +46,104 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.a519lablearnandroid.ui.theme._519LabLearnAndroidTheme
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Activity
+// ─────────────────────────────────────────────────────────────────────────────
+
 class Part9Activity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             _519LabLearnAndroidTheme {
-                Part9Screen()
+                Part9Screen(onBackClick = { finish() })
             }
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  Main Screen
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen
+// ─────────────────────────────────────────────────────────────────────────────
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Part9Screen() {
-
-    /*
-     * 📌 CONCEPT: Collapsing Toolbar (TopAppBarScrollBehavior)
-     *
-     * Collapsing Toolbar คือ Toolbar/AppBar ที่สามารถ
-     * "ยุบ" (collapse) หรือ "ขยาย" (expand) ได้
-     * ตามการ scroll ของ content ด้านล่าง
-     *
-     * ใน Jetpack Compose (Material 3) ทำได้ผ่าน:
-     *   - LargeTopAppBar / MediumTopAppBar
-     *   - TopAppBarScrollBehavior  ← ตัวควบคุมพฤติกรรม
-     *   - nestedScrollConnection   ← เชื่อม scroll ของ list
-     *                                 เข้ากับ AppBar
-     *
-     * มี 3 แบบหลัก:
-     *   1. exitUntilCollapsedScrollBehavior → ยุบจนสุด แล้วค้างไว้
-     *   2. enterAlwaysScrollBehavior        → ยุบเมื่อ scroll ลง
-     *                                         ขยายทันทีเมื่อ scroll ขึ้น
-     *   3. pinnedScrollBehavior             → ไม่ยุบ (ค้างอยู่เสมอ)
-     */
-
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+fun Part9Screen(onBackClick: () -> Unit = {}) {
+    // scrollBehavior จะเป็นตัวเชื่อมระหว่าง LazyColumn กับ TopAppBar
+    // เมื่อ scroll ลง → TopAppBar จะ "ยุบ" (collapse)
+    // เมื่อ scroll ขึ้น → TopAppBar จะ "ขยาย" (expand) กลับมา
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        rememberTopAppBarState()
+    )
 
     Scaffold(
-        // ✅ nestedScrollConnection เชื่อม scroll event
-        //    ของ LazyColumn → TopAppBar
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-
+        // nestedScrollConnection ต้องถูกส่งจาก Scaffold ขึ้นไปหา TopAppBar
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            CollapsingHeader(scrollBehavior = scrollBehavior)
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = "Mission 9: Collapsing Toolbar",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.Favorite, contentDescription = "Favorite")
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.Share, contentDescription = "Share")
+                    }
+                },
+                // ส่ง scrollBehavior เข้า LargeTopAppBar เพื่อให้รับรู้ scroll state
+                scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface
+                )
+            )
         }
     ) { innerPadding ->
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // Concept Card
+            item { CollapsingConceptCard() }
 
-            // ── Concept Cards ──────────────────────────────
-            item { ConceptCard() }
-            item { BehaviorTypesCard() }
-            item { HowItWorksCard() }
+            // Scroll Behavior Types Card
+            item { ScrollBehaviorTypesCard() }
 
-            // ── Demo content (เพื่อให้มี scroll ทดสอบ) ────
-            items(demoItems) { item ->
-                DemoItemCard(item)
+            // Key APIs Card
+            item { KeyApisCard() }
+
+            // Demo content to allow scrolling
+            items(12) { index ->
+                DemoArticleItem(index = index + 1)
             }
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  Collapsing Header (LargeTopAppBar)
-// ─────────────────────────────────────────────
-@OptIn(ExperimentalMaterial3Api::class)
+// ─────────────────────────────────────────────────────────────────────────────
+// Concept Card
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-fun CollapsingHeader(scrollBehavior: TopAppBarScrollBehavior) {
-
-    /*
-     * LargeTopAppBar มี 2 สถานะ:
-     *   • Expanded  → title อยู่ด้านล่าง (ใหญ่)
-     *   • Collapsed → title ย้ายขึ้นบน (เล็ก) เหมือน TopAppBar ปกติ
-     *
-     * scrollBehavior.state.collapsedFraction
-     *   → ค่า 0f = ขยายสุด, 1f = ยุบสุด
-     *   → ใช้ค่านี้ interpolate สี / ขนาด ได้
-     */
-
-    val collapsedFraction = scrollBehavior.state.collapsedFraction
-
-    // Interpolate สีพื้นหลังตาม scroll
-    val containerColor = lerp(
-        start = MaterialTheme.colorScheme.primaryContainer,
-        stop  = MaterialTheme.colorScheme.surface,
-        fraction = collapsedFraction
-    )
-
-    LargeTopAppBar(
-        title = {
-            Column {
-                Text(
-                    text = "Mission 9: Collapsing",
-                    fontWeight = FontWeight.Bold
-                )
-                // subtitle จะค่อยๆ หายไปตอน collapse
-                if (collapsedFraction < 0.5f) {
-                    Text(
-                        text = "Scroll ลงเพื่อดู Collapsing Effect ✨",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                            .copy(alpha = 1f - collapsedFraction * 2)
-                    )
-                }
-            }
-        },
-        navigationIcon = {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        },
-        actions = {
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Favorite, contentDescription = "Favorite")
-            }
-            IconButton(onClick = {}) {
-                Icon(Icons.Default.Share, contentDescription = "Share")
-            }
-        },
-        colors = TopAppBarDefaults.largeTopAppBarColors(
-            containerColor         = containerColor,
-            scrolledContainerColor = MaterialTheme.colorScheme.surface
-        ),
-        scrollBehavior = scrollBehavior
-    )
-}
-
-// ─────────────────────────────────────────────
-//  Concept Cards
-// ─────────────────────────────────────────────
-@Composable
-fun ConceptCard() {
+fun CollapsingConceptCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -193,33 +151,41 @@ fun ConceptCard() {
         )
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "📚 Collapsing Toolbar คืออะไร?",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Info, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Collapsing Toolbar คืออะไร?",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = """
-                    Collapsing Toolbar คือ UI Pattern ที่ทำให้
-                    Header / AppBar มีพฤติกรรม "ยืดหยุ่น" ตามการ scroll
-                    
-                    ✅ ขยาย (Expand) → แสดงข้อมูลเพิ่มเติม เช่น รูปภาพ, คำอธิบาย
-                    ✅ ยุบ (Collapse) → เหลือแค่ชื่อ + ปุ่ม action พื้นฐาน
-                    
-                    ประโยชน์:
-                    • ประหยัดพื้นที่หน้าจอขณะ scroll อ่าน content
-                    • UX ดีขึ้น เพราะ content มีพื้นที่แสดงมากขึ้น
-                    • นิยมใช้ใน Profile Page, Detail Page, Article Page
+📌 Collapsing Toolbar (หรือ Collapsing AppBar) คือ TopAppBar ที่สามารถ "ยุบตัว" ได้เมื่อผู้ใช้ scroll หน้าจอลง และ "ขยาย" กลับเมื่อ scroll ขึ้น
+
+🎯 ทำไมต้องใช้?
+• เพิ่มพื้นที่แสดงเนื้อหาเมื่อต้องการอ่าน
+• ให้ความรู้สึก dynamic และ modern มากขึ้น
+• ใช้พื้นที่หน้าจอได้อย่างมีประสิทธิภาพ
+
+⚙️ หลักการทำงาน:
+ใช้ Nested Scroll ซึ่งเป็นระบบที่ Child (LazyColumn) ส่ง scroll event ขึ้นไปหา Parent (TopAppBar) เพื่อให้ TopAppBar ปรับขนาดตาม
                 """.trimIndent(),
+                fontSize = 14.sp,
                 lineHeight = 22.sp
             )
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Scroll Behavior Types Card
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-fun BehaviorTypesCard() {
+fun ScrollBehaviorTypesCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -228,51 +194,58 @@ fun BehaviorTypesCard() {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "⚙️ ScrollBehavior 3 แบบ",
+                text = "🔄 ประเภทของ ScrollBehavior",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            BehaviorItem(
-                emoji  = "1️⃣",
-                name   = "exitUntilCollapsed",
-                desc   = "ยุบเมื่อ scroll ลง แต่จะไม่ขยายกลับ\nจนกว่าจะ scroll ขึ้นถึงบนสุด\n→ ใช้ในหน้านี้ ✅"
+            ScrollBehaviorItem(
+                name = "exitUntilCollapsedScrollBehavior",
+                desc = "TopAppBar จะยุบและไม่แสดงอีกเลยจนกว่าจะ scroll กลับขึ้นมาจนสุด (ใช้กับ LargeTopAppBar / MediumTopAppBar)"
             )
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
-            BehaviorItem(
-                emoji  = "2️⃣",
-                name   = "enterAlways",
-                desc   = "ยุบเมื่อ scroll ลง และขยายทันที\nเมื่อ scroll ขึ้นแม้จะไม่ถึงบนสุด"
+            Spacer(modifier = Modifier.height(8.dp))
+            ScrollBehaviorItem(
+                name = "enterAlwaysScrollBehavior",
+                desc = "TopAppBar จะกลับมาทันทีเมื่อเริ่ม scroll ขึ้น แม้ยังไม่ถึงด้านบน"
             )
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
-            BehaviorItem(
-                emoji  = "3️⃣",
-                name   = "pinned",
-                desc   = "ไม่ยุบ ค้างอยู่ตลอด\n(ใช้เมื่อต้องการ TopAppBar แบบคงที่)"
+            Spacer(modifier = Modifier.height(8.dp))
+            ScrollBehaviorItem(
+                name = "pinnedScrollBehavior",
+                desc = "TopAppBar คงตำแหน่งไว้ แต่เปลี่ยนสีตาม scroll state (ไม่ยุบ)"
             )
         }
     }
 }
 
 @Composable
-fun BehaviorItem(emoji: String, name: String, desc: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = emoji, fontSize = 20.sp)
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text(
-                text = name,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary
+fun ScrollBehaviorItem(name: String, desc: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(8.dp)
             )
-            Text(text = desc, fontSize = 13.sp, lineHeight = 20.sp)
-        }
+            .padding(12.dp)
+    ) {
+        Text(
+            text = name,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(text = desc, fontSize = 13.sp, lineHeight = 20.sp)
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Key APIs Card
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Composable
-fun HowItWorksCard() {
+fun KeyApisCard() {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
@@ -281,70 +254,93 @@ fun HowItWorksCard() {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "🔧 วิธีการทำงานเบื้องหลัง",
+                text = "🔑 Key APIs ที่ต้องรู้",
                 fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = """
-                    ขั้นตอนการ Implement:
-                    
-                    1. สร้าง ScrollBehavior
-                       val scrollBehavior = TopAppBarDefaults
-                           .exitUntilCollapsedScrollBehavior()
-                    
-                    2. เชื่อม Scaffold กับ nestedScroll
-                       Modifier.nestedScroll(
-                           scrollBehavior.nestedScrollConnection
-                       )
-                    
-                    3. ส่ง scrollBehavior ให้ LargeTopAppBar
-                       LargeTopAppBar(
-                           scrollBehavior = scrollBehavior
-                       )
-                    
-                    4. (Optional) ใช้ collapsedFraction
-                       เพื่อ interpolate animation เอง
-                       val fraction = scrollBehavior
-                           .state.collapsedFraction
-                       // 0f = expanded, 1f = collapsed
-                """.trimIndent(),
-                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
-                fontSize = 12.sp,
-                lineHeight = 20.sp
+            val apis = listOf(
+                "LargeTopAppBar" to "TopAppBar ขนาดใหญ่ที่ collapse ได้ (title อยู่ด้านล่าง)",
+                "MediumTopAppBar" to "ขนาดกลาง รองรับ collapse เช่นกัน",
+                "rememberTopAppBarState()" to "เก็บ state ของ TopAppBar (offset, contentOffset)",
+                ".nestedScroll(...)" to "Modifier ที่ส่ง scroll event จาก LazyColumn ไปยัง TopAppBar",
+                "scrollBehavior.nestedScrollConnection" to "สะพานเชื่อม scroll event กับ behavior"
             )
+            apis.forEach { (api, desc) ->
+                Row(modifier = Modifier.padding(vertical = 4.dp)) {
+                    Text(
+                        text = "• ",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                    Column {
+                        Text(text = api, fontWeight = FontWeight.SemiBold, fontSize = 13.sp)
+                        Text(
+                            text = desc,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  Demo Items
-// ─────────────────────────────────────────────
-data class DemoItem(val title: String, val body: String)
-
-val demoItems = List(10) { i ->
-    DemoItem(
-        title = "Demo Item #${i + 1}",
-        body  = "Scroll เพื่อทดสอบการ Collapse/Expand ของ Header ด้านบน " +
-                "สังเกตว่า LargeTopAppBar จะค่อยๆ ยุบตัวลงเมื่อ scroll ลง"
-    )
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// Demo Article Item (for scrollable content)
+// ─────────────────────────────────────────────────────────────────────────────
 
 @Composable
-fun DemoItemCard(item: DemoItem) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = item.title, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = item.body, fontSize = 13.sp)
+fun DemoArticleItem(index: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(
+                    text = "บทความที่ $index",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp
+                )
+                Text(
+                    text = "ลอง scroll ขึ้น-ลง เพื่อดู Collapsing Toolbar ทำงาน",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
         }
     }
 }
 
-// ─────────────────────────────────────────────
-//  Preview
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// Preview
+// ─────────────────────────────────────────────────────────────────────────────
+
 @Preview(showBackground = true)
 @Composable
 fun Part9Preview() {
