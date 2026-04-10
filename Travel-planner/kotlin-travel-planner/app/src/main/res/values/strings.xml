@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Travel Planner</string>
+    <string name="label_my_journeys">MY JOURNEYS</string>
+    <string name="headline_where_next">Where to next?</string>
+    <string name="no_trips">No trips yet.\nTap + to plan your first adventure!</string>
+    <string name="plan_a_trip">Plan a Trip</string>
+    <string name="add_trip">Add Trip</string>
+    <string name="optimize_route">Optimize Route</string>
+    <string name="add_expense">Add Expense</string>
+</resources>
