@@ -10,13 +10,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tripmate.ui.components.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tripmate.viewmodel.AIGeneratorViewModel
+import com.tripmate.viewmodel.UiState
 
 @Composable
-fun AIGeneratorScreen(navController: NavController) {
+fun AIGeneratorScreen(navController: NavController, viewModel: AIGeneratorViewModel = viewModel()) {
     var destination by remember { mutableStateOf("") }
     var travelers by remember { mutableStateOf("1") }
     var pace by remember { mutableStateOf("พอดี") }
-    var isGenerating by remember { mutableStateOf(false) }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val isGenerating = uiState is UiState.Loading
 
     LazyColumn(
         modifier = Modifier
@@ -86,24 +91,38 @@ fun AIGeneratorScreen(navController: NavController) {
         // 4. Generate Button
         item {
             Button(
-                onClick = { isGenerating = !isGenerating },
+                onClick = { 
+                    if (!isGenerating && destination.isNotBlank()) {
+                        viewModel.generateItinerary(destination, travelers, pace)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(50.dp),
+                enabled = !isGenerating && destination.isNotBlank()
             ) {
                 Text(if (isGenerating) "กำลังสร้าง..." else "🪄 สร้างแผนเที่ยว", style = MaterialTheme.typography.titleMedium)
             }
         }
 
-        // 5. Build Generated Preview Mockup
-        if (isGenerating) {
-            item {
-                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+        // 5. Handle Network States
+        when (uiState) {
+            is UiState.Loading -> {
+                item { CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp)) }
             }
-        } else if (destination.isNotBlank()) {
-            item {
-                Text("Preview Itinerary (Mockup)", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top=16.dp))
-                RouteMapPreview()
+            is UiState.Success -> {
+                item {
+                    Text("✅ สร้างข้อมูลสำเร็จ! (กรุณาดูผลลัพธ์ใน Log ก่อน, ยังไม่ได้หน้าถัดไป)", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top=16.dp))
+                    RouteMapPreview()
+                }
+            }
+            is UiState.Error -> {
+                item {
+                    Text("❌ Error: ${(uiState as UiState.Error).message}", color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top=16.dp))
+                }
+            }
+            is UiState.Idle -> { 
+                // Do nothing
             }
         }
     }

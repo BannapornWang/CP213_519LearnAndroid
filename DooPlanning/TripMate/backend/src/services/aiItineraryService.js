@@ -1,68 +1,92 @@
 /**
  * AI Itinerary Service
  */
+const { GoogleGenAI, Type, Schema } = require('@google/genai');
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 async function generateItinerary(tripRequest) {
   const { destination, startDate, endDate, travelers, vibes, budget, preferences } = tripRequest || {};
   
-  if (!destination || !startDate || !endDate) {
-    throw new Error('Missing required fields');
+  if (!destination) {
+    throw new Error('Missing required fields (destination)');
   }
 
-  // 1. คำนวณจำนวนวัน
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  // Provide defaults if dates are missing from Android frontend
+  const start = startDate ? new Date(startDate) : new Date();
+  const end = endDate ? new Date(endDate) : new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000); // default 3 days later
   const daysCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-  
-  // 2. แบ่งงบประมาณต่อวัน
-  const dailyBudget = budget?.total ? budget.total / daysCount : 0;
 
-  // 3. เลือกสถานที่ตาม vibe และ budget
-  // 4. จัดเรียงตาม Smart Route Optimizer
-  // 5. คำนวณเวลาที่ใช้ในแต่ละที่ และเพิ่มเวลาเดินทางระหว่างจุด
-  // 6. ปรับตาม pace preference
-  
-  const mockDays = [];
-  for (let i = 0; i < daysCount; i++) {
-    const currentDate = new Date(start);
-    currentDate.setDate(currentDate.getDate() + i);
-    
-    mockDays.push({
-      date: currentDate.toISOString().split('T')[0],
-      activities: [
+  const prompt = `
+Create a detailed ${daysCount}-day itinerary for ${destination}.
+Travelers: ${travelers || 1} people.
+Vibe/Style: ${vibes ? vibes.join(', ') : 'Popular Highlights'}.
+Budget: ${budget?.level || 'Moderate'}.
+
+IMPORTANT: You must include specific travel methods and transit recommendations between locations, including arriving from the airport into the city (e.g. Maglev Train, Metro Line X, Taxi, Walking).
+
+Return the itinerary strictly in JSON format matching this schema:
+{
+  "tripId": "string",
+  "totalEstimatedCost": "number (amount in local currency)",
+  "airportInfo": {
+    "airportCode": "string",
+    "transitOptions": [
+      {
+        "mode": "string (e.g., Maglev Train)",
+        "duration": "string (e.g., 8 mins)",
+        "notes": "string (e.g., Fastest, takes you to Longyang Road)"
+      }
+    ]
+  },
+  "days": [
+    {
+      "date": "YYYY-MM-DD",
+      "dayTitle": "string",
+      "activities": [
         {
-          place: { name: `Highlight in ${destination}`, category: (vibes && vibes[0]) ? vibes[0] : 'Attraction' },
-          startTime: '09:00',
-          endTime: '11:00',
-          duration: 120, // minutes
-          travelTimeToNext: 30, // minutes
-          estimatedCost: budget?.breakdown?.activities ? budget.breakdown.activities / daysCount : 0,
-          category: 'ACTIVITY',
-          notes: 'Enjoy the morning vibes'
+          "place": {
+            "name": "string",
+            "category": "string"
+          },
+          "startTime": "HH:MM",
+          "endTime": "HH:MM",
+          "transitFromPrevious": {
+            "mode": "string (e.g., Metro Line 2, Walk)",
+            "durationMinutes": "number",
+            "instructions": "string (e.g., Take Line 2 to Jing'an Temple)"
+          },
+          "notes": "string"
         }
-      ],
-      meals: [],
-      dayBudget: dailyBudget
-    });
-  }
+      ]
+    }
+  ]
+}
+`;
 
-  return {
-    tripId: `trip_${Date.now()}`,
-    days: mockDays,
-    totalEstimatedCost: budget?.total || 0,
-    route: { mapData: 'mock_route_points' }
-  };
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+      }
+    });
+
+    const itineraryJson = JSON.parse(response.text);
+    return itineraryJson;
+  } catch (error) {
+    console.error('Error generating itinerary from Gemini:', error);
+    // Fallback or rethrow
+    throw new Error('Failed to generate itinerary. Please check API key or prompt.');
+  }
 }
 
 async function adjustItinerary(itinerary, changes) {
-  // - เพิ่ม/ลบ สถานที่
-  // - Re-optimize route
-  // - Re-calculate budget
-  
+  // To be implemented using Gemini if needed
   return {
     ...itinerary,
-    updated: true,
-    totalEstimatedCost: itinerary.totalEstimatedCost + (changes.costAdjustment || 0)
+    updated: true
   };
 }
 
@@ -70,3 +94,4 @@ module.exports = {
   generateItinerary,
   adjustItinerary
 };
+
