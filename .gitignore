@@ -1,1 +1,5 @@
 Travel-planner/kotlin-travel-planner/local.properties
+build/
+local.properties
+.idea/
+.gradle/
