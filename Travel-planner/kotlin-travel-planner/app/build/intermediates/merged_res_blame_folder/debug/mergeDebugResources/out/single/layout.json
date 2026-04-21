@@ -1,0 +1,46 @@
+[
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_main.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/fragment_explore.xml",
+        "source": "com.travelplanner.app-main-57:/layout/fragment_explore.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_place.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_place.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_expense.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_expense.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_journal_trip.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_journal_trip.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_create_trip.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_create_trip.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_suggestion.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_suggestion.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_trip_detail.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_trip_detail.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/dialog_add_expense.xml",
+        "source": "com.travelplanner.app-main-57:/layout/dialog_add_expense.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_trip.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_trip.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_journal.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_journal.xml"
+    }
+]
