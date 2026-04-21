@@ -45,6 +45,7 @@ id barFood
 id barTransport
 id bottomNavigation
 id bottomNavigationJournal
+id btnAdd
 id btnAddExpense
 id btnBack
 id btnCreate
@@ -66,6 +67,7 @@ id editDestination
 id editSearch
 id editStartDate
 id editTitle
+id exploreFragment
 id fabAddTrip
 id iconTransport
 id layoutBookings
@@ -145,6 +147,7 @@ id textSummaryDays
 id textSummaryDestination
 id textSummaryPlaces
 id textTitle
+id textTransport
 id textTripTitle
 id textVibes
 id toolbar
@@ -152,6 +155,7 @@ id viewProgressFill
 id viewStatusDot
 id viewTimeline
 layout activity_create_trip
+layout activity_explore
 layout activity_journal
 layout activity_main
 layout activity_trip_detail

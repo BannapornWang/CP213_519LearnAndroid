@@ -50,6 +50,10 @@
             android:name="com.travelplanner.ui.JournalActivity"
             android:label="Journal"
             android:parentActivityName="com.travelplanner.ui.MainActivity" />
+        <activity
+            android:name="com.travelplanner.ui.ExploreActivity"
+            android:label="Explore"
+            android:parentActivityName="com.travelplanner.ui.MainActivity" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

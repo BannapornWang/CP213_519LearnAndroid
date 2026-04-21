@@ -3298,6 +3298,7 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id btnAdd
 id btnAddExpense
 id btnBack
 id btnCreate
@@ -3404,6 +3405,7 @@ id escape
 id exitUntilCollapsed
 id expand_activities_button
 id expanded_menu
+id exploreFragment
 id fabAddTrip
 id fade
 id fill
@@ -3759,6 +3761,7 @@ id textSummaryDestination
 id textSummaryPlaces
 id textTitle
 id textTop
+id textTransport
 id textTripTitle
 id textVibes
 id text_input_end_icon
@@ -3934,6 +3937,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
 layout activity_create_trip
+layout activity_explore
 layout activity_journal
 layout activity_main
 layout activity_trip_detail

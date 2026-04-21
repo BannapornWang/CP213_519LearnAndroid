@@ -3297,6 +3297,7 @@ int id bounce 0x7f090068
 int id bounceBoth 0x7f090069
 int id bounceEnd 0x7f09006a
 int id bounceStart 0x7f09006b
+int id btnAdd 0x7f090277
 int id btnAddExpense 0x7f09006c
 int id btnBack 0x7f09006d
 int id btnCreate 0x7f09006e
@@ -3403,6 +3404,7 @@ int id escape 0x7f0900d2
 int id exitUntilCollapsed 0x7f0900d3
 int id expand_activities_button 0x7f0900d4
 int id expanded_menu 0x7f0900d5
+int id exploreFragment 0x7f090278
 int id fabAddTrip 0x7f0900d6
 int id fade 0x7f0900d7
 int id fill 0x7f0900d8
@@ -3758,6 +3760,7 @@ int id textSummaryDestination 0x7f090235
 int id textSummaryPlaces 0x7f090236
 int id textTitle 0x7f090237
 int id textTop 0x7f090238
+int id textTransport 0x7f090274
 int id textTripTitle 0x7f090239
 int id textVibes 0x7f09023a
 int id text_input_end_icon 0x7f09023b
@@ -3933,6 +3936,7 @@ int layout abc_search_view 0x7f0c0019
 int layout abc_select_dialog_material 0x7f0c001a
 int layout abc_tooltip 0x7f0c001b
 int layout activity_create_trip 0x7f0c001c
+int layout activity_explore 0x7f0c0076
 int layout activity_journal 0x7f0c001d
 int layout activity_main 0x7f0c001e
 int layout activity_trip_detail 0x7f0c001f

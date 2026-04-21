@@ -48,6 +48,10 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_trips -> true // already here
+                R.id.nav_explore -> {
+                    startActivity(Intent(this, ExploreActivity::class.java))
+                    false
+                }
                 R.id.nav_journal -> {
                     startActivity(Intent(this, JournalActivity::class.java))
                     false // don't keep it selected; Journal has its own bottom nav state

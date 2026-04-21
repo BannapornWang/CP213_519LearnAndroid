@@ -68,7 +68,7 @@ object ItineraryUtils {
         val prompt = """Create a travel itinerary for $destination for $days days with a total budget of ${budget.toInt()} THB.
 Return ONLY a JSON array. No explanations, no markdown, no extra text. Just the raw JSON array.
 Format:
-[{"date":"Day 1","places":[{"name":"Place Name","category":"Attraction","description":"Brief description","estimatedCost":500,"durationMinutes":90}]},{"date":"Day 2","places":[...]}]
+[{"date":"Day 1","places":[{"name":"Place Name","category":"Attraction","description":"Brief description","estimatedCost":500,"durationMinutes":90,"transport":"Metro Line X -> Walk 5 min"}]},{"date":"Day 2","places":[...]}]
 Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultural, Nightlife"""
 
         val requestBody = JSONObject().apply {
@@ -156,6 +156,7 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
                                 address = "",
                                 durationMinutes = pObj.optInt("durationMinutes", 60),
                                 cost = pObj.optDouble("estimatedCost", 0.0),
+                                transport = pObj.optString("transport", ""),
                                 notes = pObj.optString("description", "")
                             )
                         )
@@ -254,4 +255,79 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
     }
 
     fun nearbyGems(): List<PlaceSuggestion> = PLACE_SUGGESTIONS.shuffled().take(6)
+
+    // ─── AI Place Search via Gemini ──────────────────────────────────────────
+
+    suspend fun searchPlacesAI(query: String): List<PlaceSuggestion> {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty()) return searchByVibe(query)
+
+        val prompt = """Search for 5-8 popular places or activities for: "$query".
+Return ONLY a JSON array of objects. No explanations.
+Format:
+[{"id":"ai_1","name":"Place Name","category":"Attraction","vibes":["vibe1","vibe2"],"rating":4.8,"priceLevel":2,"durationMinutes":90,"description":"Short description","address":"Location"}]
+Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultural, Nightlife"""
+
+        val requestBody = JSONObject().apply {
+            put("contents", JSONArray().apply {
+                put(JSONObject().apply {
+                    put("parts", JSONArray().apply {
+                        put(JSONObject().apply { put("text", prompt) })
+                    })
+                })
+            })
+        }.toString()
+
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey"
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder()
+                    .url(url)
+                    .post(requestBody.toRequestBody("application/json".toMediaType()))
+                    .build()
+
+                val response = httpClient.newCall(request).execute()
+                val body = response.body?.string() ?: ""
+                if (!response.isSuccessful) return@withContext searchByVibe(query)
+
+                val root = JSONObject(body)
+                val text = root.getJSONArray("candidates").getJSONObject(0)
+                    .getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
+
+                val startIndex = text.indexOf('[')
+                val endIndex = text.lastIndexOf(']')
+                if (startIndex == -1) return@withContext searchByVibe(query)
+
+                val cleanText = text.substring(startIndex, endIndex + 1)
+                val jsonArray = JSONArray(cleanText)
+                val result = mutableListOf<PlaceSuggestion>()
+
+                for (i in 0 until jsonArray.length()) {
+                    val o = jsonArray.getJSONObject(i)
+                    val vibesArr = o.optJSONArray("vibes")
+                    val vibesList = mutableListOf<String>()
+                    if (vibesArr != null) {
+                        for (j in 0 until vibesArr.length()) vibesList.add(vibesArr.getString(j))
+                    }
+
+                    result.add(PlaceSuggestion(
+                        id = UUID.randomUUID().toString(),
+                        name = o.optString("name", "Unknown"),
+                        category = o.optString("category", "Attraction"),
+                        vibes = vibesList,
+                        rating = o.optDouble("rating", 4.5),
+                        priceLevel = o.optInt("priceLevel", 1),
+                        durationMinutes = o.optInt("durationMinutes", 60),
+                        description = o.optString("description", ""),
+                        address = o.optString("address", "")
+                    ))
+                }
+                result
+            } catch (e: Exception) {
+                Log.e(TAG, "AI Search failed", e)
+                searchByVibe(query)
+            }
+        }
+    }
 }

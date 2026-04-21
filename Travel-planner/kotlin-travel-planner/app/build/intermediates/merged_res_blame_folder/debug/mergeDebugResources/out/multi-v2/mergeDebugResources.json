@@ -2348,23 +2348,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\src\\main\\res\\values\\dimens.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "49",
-                        "endOffsets": "100"
-                    },
-                    "to": {
-                        "startLines": "1084",
-                        "startColumns": "4",
-                        "startOffsets": "63849",
-                        "endColumns": "49",
-                        "endOffsets": "63894"
-                    }
-                },
-                {
                     "source": "C:\\Users\\Administrator\\.gradle\\caches\\9.0.0\\transforms\\897c83c092a1fad4dab98a3cbea1534a\\transformed\\jetified-activity-1.10.1\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3",
@@ -2399,25 +2382,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\src\\main\\res\\values\\arrays.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "9",
-                        "endColumns": "19",
-                        "endOffsets": "257"
-                    },
-                    "to": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "150",
-                        "endLines": "9",
-                        "endColumns": "19",
-                        "endOffsets": "352"
-                    }
-                },
-                {
                     "source": "C:\\Users\\Administrator\\.gradle\\caches\\9.0.0\\transforms\\97d78b6e264684cbb66d455bee7fad3b\\transformed\\jetified-core-viewtree-1.0.0\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2",
@@ -2449,59 +2413,6 @@
                         "startOffsets": "133254",
                         "endColumns": "82",
                         "endOffsets": "133332"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "9,7,2,4,3,5,8,6",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "472,368,55,165,107,228,414,316",
-                        "endColumns": "51,45,51,62,57,87,57,51",
-                        "endOffsets": "519,409,102,223,160,311,467,363"
-                    },
-                    "to": {
-                        "startLines": "2027,2028,2030,2057,2061,2170,2171,2177",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "133156,133208,133337,136201,136630,152364,152452,153312",
-                        "endColumns": "51,45,51,62,57,87,57,51",
-                        "endOffsets": "133203,133249,133384,136259,136683,152447,152505,153359"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\src\\main\\res\\values\\themes.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "8",
-                        "endColumns": "12",
-                        "endOffsets": "456"
-                    },
-                    "to": {
-                        "startLines": "6597",
-                        "startColumns": "4",
-                        "startOffsets": "462016",
-                        "endLines": "6603",
-                        "endColumns": "12",
-                        "endOffsets": "462417"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\src\\main\\res\\values\\colors.xml",
-                    "from": {
-                        "startLines": "5,6,11,15,12,8,2,4,3,23,24,21,22,17,18,19,20,13,14,7,9,10",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "196,237,465,640,506,324,55,144,97,1026,1077,923,972,713,763,818,868,546,588,282,369,416",
-                        "endColumns": "40,44,40,45,39,44,41,51,46,50,55,48,53,49,54,49,54,41,51,41,46,48",
-                        "endOffsets": "232,277,501,681,541,364,92,191,139,1072,1128,967,1021,758,813,863,918,583,635,319,411,460"
-                    },
-                    "to": {
-                        "startLines": "651,656,661,711,959,962,963,964,965,980,981,982,983,984,985,986,987,988,989,990,995,996",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "32846,33202,33566,37051,55749,55921,55966,56008,56060,57106,57157,57213,57262,57316,57366,57421,57471,57526,57568,57620,57948,57995",
-                        "endColumns": "40,44,40,45,39,44,41,51,46,50,55,48,53,49,54,49,54,41,51,41,46,48",
-                        "endOffsets": "32882,33242,33602,37092,55784,55961,56003,56055,56102,57152,57208,57257,57311,57361,57416,57466,57521,57563,57615,57657,57990,58039"
                     }
                 },
                 {
@@ -2543,6 +2454,23 @@
                     }
                 },
                 {
+                    "source": "C:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "9,7,2,4,3,5,8,6",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "472,368,55,165,107,228,414,316",
+                        "endColumns": "51,45,51,62,57,87,57,51",
+                        "endOffsets": "519,409,102,223,160,311,467,363"
+                    },
+                    "to": {
+                        "startLines": "2027,2028,2030,2057,2061,2170,2171,2177",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "133156,133208,133337,136201,136630,152364,152452,153312",
+                        "endColumns": "51,45,51,62,57,87,57,51",
+                        "endOffsets": "133203,133249,133384,136259,136683,152447,152505,153359"
+                    }
+                },
+                {
                     "source": "C:\\Users\\Administrator\\.gradle\\caches\\9.0.0\\transforms\\8221e75115ddb81c223e78f6e3e4a713\\transformed\\jetified-window-1.0.0\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,7,8,9,10,11,19,23,34,51",
@@ -2576,6 +2504,59 @@
                         "startOffsets": "122257,122297,123593,123884,123939,125543,125588,125642,125698,125750,125802,125851,125912",
                         "endColumns": "39,46,42,54,46,44,53,55,51,51,48,60,49",
                         "endOffsets": "122292,122339,123631,123934,123981,125583,125637,125693,125745,125797,125846,125907,125957"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\src\\main\\res\\values\\themes.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "8",
+                        "endColumns": "12",
+                        "endOffsets": "456"
+                    },
+                    "to": {
+                        "startLines": "6597",
+                        "startColumns": "4",
+                        "startOffsets": "462016",
+                        "endLines": "6603",
+                        "endColumns": "12",
+                        "endOffsets": "462417"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\src\\main\\res\\values\\colors.xml",
+                    "from": {
+                        "startLines": "5,6,11,15,12,8,2,4,3,23,24,21,22,17,18,19,20,13,14,7,9,10",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "196,237,465,640,506,324,55,144,97,1026,1077,923,972,713,763,818,868,546,588,282,369,416",
+                        "endColumns": "40,44,40,45,39,44,41,51,46,50,55,48,53,49,54,49,54,41,51,41,46,48",
+                        "endOffsets": "232,277,501,681,541,364,92,191,139,1072,1128,967,1021,758,813,863,918,583,635,319,411,460"
+                    },
+                    "to": {
+                        "startLines": "651,656,661,711,959,962,963,964,965,980,981,982,983,984,985,986,987,988,989,990,995,996",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "32846,33202,33566,37051,55749,55921,55966,56008,56060,57106,57157,57213,57262,57316,57366,57421,57471,57526,57568,57620,57948,57995",
+                        "endColumns": "40,44,40,45,39,44,41,51,46,50,55,48,53,49,54,49,54,41,51,41,46,48",
+                        "endOffsets": "32882,33242,33602,37092,55784,55961,56003,56055,56102,57152,57208,57257,57311,57361,57416,57466,57521,57563,57615,57657,57990,58039"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\src\\main\\res\\values\\dimens.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "49",
+                        "endOffsets": "100"
+                    },
+                    "to": {
+                        "startLines": "1084",
+                        "startColumns": "4",
+                        "startOffsets": "63849",
+                        "endColumns": "49",
+                        "endOffsets": "63894"
                     }
                 },
                 {
@@ -2741,6 +2722,25 @@
                         "endLines": "1795,1865,1881,1882,11392,11571,12576",
                         "endColumns": "62,56,58,48,24,24,24",
                         "endOffsets": "119077,123200,124084,124133,722382,728596,766708"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\src\\main\\res\\values\\arrays.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "9",
+                        "endColumns": "19",
+                        "endOffsets": "257"
+                    },
+                    "to": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "150",
+                        "endLines": "9",
+                        "endColumns": "19",
+                        "endOffsets": "352"
                     }
                 },
                 {

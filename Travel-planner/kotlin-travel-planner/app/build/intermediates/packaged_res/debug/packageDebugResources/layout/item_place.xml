@@ -111,6 +111,20 @@
             app:layout_constraintTop_toBottomOf="@id/textName" />
 
         <TextView
+            android:id="@+id/textTransport"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Transport info"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/textName"
+            app:layout_constraintStart_toStartOf="@id/textName"
+            app:layout_constraintTop_toBottomOf="@id/textAddress" />
+
+        <TextView
             android:id="@+id/textDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -119,7 +133,7 @@
             android:textColor="@color/text_secondary"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="@id/textName"
-            app:layout_constraintTop_toBottomOf="@id/textAddress" />
+            app:layout_constraintTop_toBottomOf="@id/textTransport" />
 
         <TextView
             android:id="@+id/textCost"

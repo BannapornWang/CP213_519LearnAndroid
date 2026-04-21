@@ -20,6 +20,7 @@ data class Place(
     val address: String,
     val durationMinutes: Int,
     val cost: Double,
+    val transport: String = "",
     val notes: String = "",
     var visited: Boolean = false
 ) : Parcelable

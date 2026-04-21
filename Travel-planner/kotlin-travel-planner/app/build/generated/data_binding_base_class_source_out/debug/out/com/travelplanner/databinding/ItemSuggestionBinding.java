@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.travelplanner.R;
 import java.lang.NullPointerException;
@@ -18,6 +19,9 @@ import java.lang.String;
 public final class ItemSuggestionBinding implements ViewBinding {
   @NonNull
   private final MaterialCardView rootView;
+
+  @NonNull
+  public final MaterialButton btnAdd;
 
   @NonNull
   public final TextView textAddress;
@@ -43,11 +47,12 @@ public final class ItemSuggestionBinding implements ViewBinding {
   @NonNull
   public final TextView textVibes;
 
-  private ItemSuggestionBinding(@NonNull MaterialCardView rootView, @NonNull TextView textAddress,
-      @NonNull TextView textCategory, @NonNull TextView textDescription,
-      @NonNull TextView textDuration, @NonNull TextView textName, @NonNull TextView textPrice,
-      @NonNull TextView textRating, @NonNull TextView textVibes) {
+  private ItemSuggestionBinding(@NonNull MaterialCardView rootView, @NonNull MaterialButton btnAdd,
+      @NonNull TextView textAddress, @NonNull TextView textCategory,
+      @NonNull TextView textDescription, @NonNull TextView textDuration, @NonNull TextView textName,
+      @NonNull TextView textPrice, @NonNull TextView textRating, @NonNull TextView textVibes) {
     this.rootView = rootView;
+    this.btnAdd = btnAdd;
     this.textAddress = textAddress;
     this.textCategory = textCategory;
     this.textDescription = textDescription;
@@ -85,6 +90,12 @@ public final class ItemSuggestionBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnAdd;
+      MaterialButton btnAdd = ViewBindings.findChildViewById(rootView, id);
+      if (btnAdd == null) {
+        break missingId;
+      }
+
       id = R.id.textAddress;
       TextView textAddress = ViewBindings.findChildViewById(rootView, id);
       if (textAddress == null) {
@@ -133,8 +144,8 @@ public final class ItemSuggestionBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemSuggestionBinding((MaterialCardView) rootView, textAddress, textCategory,
-          textDescription, textDuration, textName, textPrice, textRating, textVibes);
+      return new ItemSuggestionBinding((MaterialCardView) rootView, btnAdd, textAddress,
+          textCategory, textDescription, textDuration, textName, textPrice, textRating, textVibes);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

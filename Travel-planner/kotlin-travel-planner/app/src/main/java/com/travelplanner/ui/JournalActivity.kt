@@ -36,8 +36,14 @@ class JournalActivity : AppCompatActivity() {
         binding.bottomNavigationJournal.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 com.travelplanner.R.id.nav_trips -> {
-                    finish() // go back to MainActivity
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
                     true
+                }
+                com.travelplanner.R.id.nav_explore -> {
+                    startActivity(Intent(this, ExploreActivity::class.java))
+                    false
                 }
                 com.travelplanner.R.id.nav_journal -> true
                 else -> false

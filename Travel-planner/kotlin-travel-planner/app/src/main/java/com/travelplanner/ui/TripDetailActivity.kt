@@ -67,7 +67,7 @@ class TripDetailActivity : AppCompatActivity() {
     }
 
     private fun setupTabs() {
-        listOf("Itinerary", "Budget", "Bookings", "Record").forEach {
+        listOf("Itinerary", "Budget", "Record").forEach {
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(it))
         }
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -305,7 +305,6 @@ class TripDetailActivity : AppCompatActivity() {
     private fun renderTrip(trip: Trip) {
         val days     = viewModel.getDays(trip)
         val expenses = viewModel.getExpenses(trip)
-        val bookings = viewModel.getBookings(trip)
         val summary  = BudgetUtils.calculateSummary(expenses, days)
 
         renderHeader(trip, summary)
@@ -313,8 +312,7 @@ class TripDetailActivity : AppCompatActivity() {
         renderDayChips(trip, days)
         renderBudgetOverview(trip, summary)
         expenseAdapter.submitList(expenses)
-        renderBookings(bookings)
-        renderRecord(trip, days, bookings)
+        renderRecord(trip, days)
 
         showTab(binding.tabLayout.selectedTabPosition)
     }
@@ -450,13 +448,12 @@ class TripDetailActivity : AppCompatActivity() {
 
     // ── Record ────────────────────────────────────────────────────────────────
 
-    private fun renderRecord(trip: Trip, days: List<DayPlan>, bookings: List<Booking>) {
+    private fun renderRecord(trip: Trip, days: List<DayPlan>) {
         val visitedCount = days.sumOf { d -> d.places.count { it.visited } }
         val totalPlaces  = days.sumOf { it.places.size }
         binding.textSummaryDestination.text = trip.destination
         binding.textSummaryDays.text        = "${BudgetUtils.getDaysCount(trip.startDate, trip.endDate)} days"
         binding.textSummaryPlaces.text      = "$visitedCount / $totalPlaces visited"
-        binding.textSummaryBookings.text    = "${bookings.size} confirmed"
 
         binding.ratingBar.rating = trip.rating.toFloat()
         binding.ratingBar.setOnRatingBarChangeListener { _, rating, fromUser ->
@@ -482,8 +479,7 @@ class TripDetailActivity : AppCompatActivity() {
     private fun showTab(index: Int) {
         binding.layoutItinerary.visibility = if (index == 0) View.VISIBLE else View.GONE
         binding.layoutBudget.visibility    = if (index == 1) View.VISIBLE else View.GONE
-        binding.layoutBookings.visibility  = if (index == 2) View.VISIBLE else View.GONE
-        binding.layoutRecord.visibility    = if (index == 3) View.VISIBLE else View.GONE
+        binding.layoutRecord.visibility    = if (index == 2) View.VISIBLE else View.GONE
     }
 
     // ── Add expense dialog ────────────────────────────────────────────────────

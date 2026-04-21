@@ -37,6 +37,11 @@
             android:parentActivityName=".ui.MainActivity"
             android:label="Journal" />
 
+        <activity
+            android:name=".ui.ExploreActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:label="Explore" />
+
     </application>
 
 </manifest>

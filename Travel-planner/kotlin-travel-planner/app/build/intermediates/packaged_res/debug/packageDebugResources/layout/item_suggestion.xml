@@ -58,6 +58,15 @@
         <TextView android:id="@+id/textVibes"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:textColor="@color/text_secondary" android:textSize="10sp"
-            android:fontFamily="monospace" />
+            android:fontFamily="monospace"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAdd"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="+ Add to Trip"
+            app:icon="@android:drawable/ic_input_add" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

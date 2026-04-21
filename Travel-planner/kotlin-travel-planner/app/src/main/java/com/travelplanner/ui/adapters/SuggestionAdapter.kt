@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.travelplanner.data.PlaceSuggestion
 import com.travelplanner.databinding.ItemSuggestionBinding
 
-class SuggestionAdapter : ListAdapter<PlaceSuggestion, SuggestionAdapter.VH>(DIFF) {
+class SuggestionAdapter(
+    private val onAddClick: (PlaceSuggestion) -> Unit
+) : ListAdapter<PlaceSuggestion, SuggestionAdapter.VH>(DIFF) {
 
     inner class VH(val binding: ItemSuggestionBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -28,6 +30,7 @@ class SuggestionAdapter : ListAdapter<PlaceSuggestion, SuggestionAdapter.VH>(DIF
             val m = s.durationMinutes % 60
             textDuration.text    = if (h > 0) "${h}h${if (m > 0) " ${m}m" else ""}" else "${m}m"
             textVibes.text       = s.vibes.joinToString(" · ")
+            btnAdd.setOnClickListener { onAddClick(s) }
         }
     }
 

@@ -25,6 +25,12 @@ class PlaceAdapter(
             textName.text     = place.name
             textCategory.text = place.category
             textAddress.text  = place.address
+            if (place.transport.isNotEmpty()) {
+                textTransport.visibility = android.view.View.VISIBLE
+                textTransport.text = place.transport
+            } else {
+                textTransport.visibility = android.view.View.GONE
+            }
             val h = place.durationMinutes / 60
             val m = place.durationMinutes % 60
             textDuration.text = if (h > 0) "${h}h${if (m > 0) " ${m}m" else ""}" else "${m}m"

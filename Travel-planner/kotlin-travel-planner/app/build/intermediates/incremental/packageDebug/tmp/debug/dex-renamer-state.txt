@@ -1,13 +1,13 @@
-#Fri Apr 10 14:17:06 ICT 2026
-base.0=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.2=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
-base.3=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
-base.4=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.5=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
-base.6=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
-base.7=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
-base.8=C\:\\Users\\Administrator\\Documents\\GitHub\\CP213_519LearnAndroid\\Travel-planner\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+#Tue Apr 21 21:54:34 ICT 2026
+base.0=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.2=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\12\\classes.dex
+base.3=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
+base.4=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
+base.5=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
+base.6=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex
+base.7=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
+base.8=C\:\\Users\\Administrator\\Documents\\kotlin-travel-planner\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.2=12/classes.dex
