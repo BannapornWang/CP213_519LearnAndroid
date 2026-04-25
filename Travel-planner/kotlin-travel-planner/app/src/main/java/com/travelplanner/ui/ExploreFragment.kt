@@ -72,13 +72,18 @@ class ExploreFragment : Fragment() {
         binding.btnSearch.text = "..."
         
         viewLifecycleOwner.lifecycleScope.launch {
-            val results = ItineraryUtils.searchPlacesAI(query)
-            adapter.submitList(results)
-            binding.btnSearch.isEnabled = true
-            binding.btnSearch.text = "Search"
-            
-            if (results.isEmpty()) {
-                Toast.makeText(requireContext(), "No results found for '$query'", Toast.LENGTH_SHORT).show()
+            try {
+                val results = ItineraryUtils.searchPlacesAI(query)
+                adapter.submitList(results)
+                
+                if (results.isEmpty()) {
+                    Toast.makeText(requireContext(), "No results found for '$query'. Try another vibe!", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Search failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.btnSearch.isEnabled = true
+                binding.btnSearch.text = "Search"
             }
         }
     }

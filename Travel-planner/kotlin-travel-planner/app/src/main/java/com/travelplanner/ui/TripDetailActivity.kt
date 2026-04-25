@@ -138,15 +138,15 @@ class TripDetailActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                val fromPos = viewHolder.adapterPosition
-                val toPos = target.adapterPosition
+                val fromPos = viewHolder.bindingAdapterPosition
+                val toPos = target.bindingAdapterPosition
                 if (fromPos == RecyclerView.NO_POSITION || toPos == RecyclerView.NO_POSITION) return false
                 editAdapter.moveItem(fromPos, toPos)
                 return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val pos = viewHolder.adapterPosition
+                val pos = viewHolder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     editAdapter.removeItem(pos)
                 }
@@ -356,7 +356,7 @@ class TripDetailActivity : AppCompatActivity() {
                 text = "Day ${idx + 1}\n${BudgetUtils.formatShortDate(day.date)}"
                 isCheckable = true
                 isChecked   = idx == selectedDayIndex
-                chipCornerRadius = 100f
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(100f)
                 if (idx == selectedDayIndex) {
                     setChipBackgroundColorResource(R.color.primary)
                     setTextColor(Color.WHITE)
@@ -467,7 +467,7 @@ class TripDetailActivity : AppCompatActivity() {
                 text = mood
                 isCheckable = true
                 isChecked   = trip.mood == key
-                chipCornerRadius = 100f
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(100f)
                 setOnClickListener { viewModel.updateMood(trip, key) }
             }
             binding.chipGroupMood.addView(chip)

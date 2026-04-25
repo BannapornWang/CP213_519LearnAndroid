@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             ): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.adapterPosition
+                val position = viewHolder.bindingAdapterPosition
                 val trip = adapter.currentList[position]
                 viewModel.deleteTrip(trip.id)
                 Toast.makeText(this@MainActivity, "Trip '${trip.title}' deleted", Toast.LENGTH_SHORT).show()
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                 text = label
                 isCheckable = true
                 isChecked = (status == currentFilter)
-                chipCornerRadius = 100f
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(100f)
                 textSize = 13f
 
                 if (status == currentFilter) {

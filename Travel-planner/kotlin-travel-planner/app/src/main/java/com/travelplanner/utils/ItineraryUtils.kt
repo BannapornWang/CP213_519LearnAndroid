@@ -289,10 +289,21 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
 
                 val response = httpClient.newCall(request).execute()
                 val body = response.body?.string() ?: ""
-                if (!response.isSuccessful) return@withContext searchByVibe(query)
+                Log.d(TAG, "Gemini Search HTTP status: ${response.code}")
+                
+                if (!response.isSuccessful) {
+                    Log.e(TAG, "Gemini Search API error: $body")
+                    return@withContext searchByVibe(query)
+                }
 
                 val root = JSONObject(body)
-                val text = root.getJSONArray("candidates").getJSONObject(0)
+                val candidates = root.optJSONArray("candidates")
+                if (candidates == null || candidates.length() == 0) {
+                    Log.w(TAG, "No candidates returned from Gemini")
+                    return@withContext searchByVibe(query)
+                }
+
+                val text = candidates.getJSONObject(0)
                     .getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
 
                 val startIndex = text.indexOf('[')
