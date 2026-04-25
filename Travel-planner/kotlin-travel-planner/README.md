@@ -21,6 +21,17 @@ Full-featured Android travel journal app built with Kotlin, Room, and Material D
 | Async | Coroutines + Flow |
 | Build | Gradle 8.7, Version Catalog |
 
+## Configuration
+
+This app uses Google's Gemini API for the **AI Itinerary Generator**. To run the project locally, you must provide your own API key.
+
+1. Get an API key from [Google AI Studio](https://aistudio.google.com/)
+2. Open `local.properties` at the root of the project (create it if missing)
+3. Add the following line:
+   ```properties
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
 ## How to build
 
 1. **Clone / open** in Android Studio Koala or later
