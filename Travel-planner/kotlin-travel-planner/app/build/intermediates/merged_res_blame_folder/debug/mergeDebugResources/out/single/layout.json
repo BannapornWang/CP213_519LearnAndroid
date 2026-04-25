@@ -8,6 +8,14 @@
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\activity_journal.xml"
     },
     {
+        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\activity_explore.xml",
+        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\activity_explore.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/item_place.xml",
+        "source": "com.travelplanner.app-main-57:/layout/item_place.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\item_expense.xml",
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_expense.xml"
     },
@@ -20,20 +28,24 @@
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_place.xml"
     },
     {
-        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\item_trip.xml",
-        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_trip.xml"
-    },
-    {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\dialog_add_expense.xml",
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\dialog_add_expense.xml"
     },
     {
-        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\item_journal_trip.xml",
-        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_journal_trip.xml"
+        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\item_trip.xml",
+        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_trip.xml"
     },
     {
-        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_explore.xml",
-        "source": "com.travelplanner.app-main-57:/layout/activity_explore.xml"
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_create_trip.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_create_trip.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-mergeDebugResources-54:/layout/activity_trip_detail.xml",
+        "source": "com.travelplanner.app-main-57:/layout/activity_trip_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\item_journal_trip.xml",
+        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\item_journal_trip.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-mergeDebugResources-54:\\layout\\activity_main.xml",

@@ -56,13 +56,13 @@ object ItineraryUtils {
 
     // ─── AI itinerary generator via Gemini REST API ───────────────────────────
 
-    suspend fun generateItinerary(destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
-        val apiKey = BuildConfig.GEMINI_API_KEY
+    suspend fun generateItinerary(destination: String, startDate: String, days: Int, budget: Double, userApiKey: String = ""): List<DayPlan> {
+        val apiKey = if (userApiKey.isNotBlank()) userApiKey else BuildConfig.GEMINI_API_KEY
         Log.d(TAG, "API Key length: ${apiKey.length}")
 
         if (apiKey.isEmpty()) {
             Log.w(TAG, "API key is empty, using mock data")
-            return generateMockItinerary(startDate, days, budget)
+            return generateMockItinerary(destination, startDate, days, budget)
         }
 
         val prompt = """Create a travel itinerary for $destination for $days days with a total budget of ${budget.toInt()} THB.
@@ -99,7 +99,7 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
 
                 if (!response.isSuccessful) {
                     Log.e(TAG, "Gemini API error: $body")
-                    return@withContext generateMockItinerary(startDate, days, budget)
+                    return@withContext generateMockItinerary(destination, startDate, days, budget)
                 }
 
                 val root = JSONObject(body)
@@ -112,21 +112,21 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
                     .getString("text")
 
                 Log.d(TAG, "Gemini text output: ${text.take(300)}")
-                parseAIResponse(text, startDate, days, budget)
+                parseAIResponse(text, destination, startDate, days, budget)
             } catch (e: Exception) {
                 Log.e(TAG, "Exception calling Gemini: ${e.message}", e)
-                generateMockItinerary(startDate, days, budget)
+                generateMockItinerary(destination, startDate, days, budget)
             }
         }
     }
 
-    private fun parseAIResponse(jsonText: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
+    private fun parseAIResponse(jsonText: String, destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
         try {
             val startIndex = jsonText.indexOf('[')
             val endIndex = jsonText.lastIndexOf(']')
             if (startIndex == -1 || endIndex == -1) {
                 System.err.println("Gemini Response does not contain a JSON array:\n$jsonText")
-                return generateMockItinerary(startDate, days, budget)
+                return generateMockItinerary(destination, startDate, days, budget)
             }
             
             val cleanText = jsonText.substring(startIndex, endIndex + 1)
@@ -166,7 +166,7 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
             }
             if (result.isEmpty()) {
                 System.err.println("Gemini returned empty json array")
-                return generateMockItinerary(startDate, days, budget)
+                return generateMockItinerary(destination, startDate, days, budget)
             }
             
             // Pad if less than days requested
@@ -179,11 +179,11 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
             return result
         } catch(e: Exception) {
             e.printStackTrace()
-            return generateMockItinerary(startDate, days, budget)
+            return generateMockItinerary(destination, startDate, days, budget)
         }
     }
 
-    fun generateMockItinerary(startDate: String, days: Int, budget: Double): List<DayPlan> {
+    fun generateMockItinerary(destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
         val dailyBudget = budget / days
         val result = mutableListOf<DayPlan>()
         val usedIds = mutableSetOf<String>()
@@ -198,7 +198,12 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
             var remainBudget = dailyBudget
             var remainTime = 600
 
-            val available = PLACE_SUGGESTIONS.filter { it.id !in usedIds }.shuffled()
+            val mappedSuggestions = PLACE_SUGGESTIONS.map { s ->
+                val newName = if (destination.isNotBlank()) "${s.name} ($destination)" else s.name
+                val newAddress = if (destination.isNotBlank()) destination else s.address
+                s.copy(name = newName, address = newAddress)
+            }
+            val available = mappedSuggestions.filter { it.id !in usedIds }.shuffled()
             for (s in available) {
                 if (dayPlaces.size >= 4) break
                 if (s.durationMinutes > remainTime) continue

@@ -3,7 +3,7 @@ import java.util.Properties
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
-    localProperties.load(localPropertiesFile.inputStream())
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
 plugins {

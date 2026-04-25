@@ -26,6 +26,9 @@ public final class ActivityCreateTripBinding implements ViewBinding {
   public final MaterialButton btnCreate;
 
   @NonNull
+  public final TextInputEditText editApiKey;
+
+  @NonNull
   public final TextInputEditText editBudget;
 
   @NonNull
@@ -47,12 +50,14 @@ public final class ActivityCreateTripBinding implements ViewBinding {
   public final Toolbar toolbar;
 
   private ActivityCreateTripBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull MaterialButton btnCreate, @NonNull TextInputEditText editBudget,
-      @NonNull TextInputEditText editDays, @NonNull TextInputEditText editDestination,
-      @NonNull TextInputEditText editStartDate, @NonNull TextInputEditText editTitle,
-      @NonNull Spinner spinnerCurrency, @NonNull Toolbar toolbar) {
+      @NonNull MaterialButton btnCreate, @NonNull TextInputEditText editApiKey,
+      @NonNull TextInputEditText editBudget, @NonNull TextInputEditText editDays,
+      @NonNull TextInputEditText editDestination, @NonNull TextInputEditText editStartDate,
+      @NonNull TextInputEditText editTitle, @NonNull Spinner spinnerCurrency,
+      @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.btnCreate = btnCreate;
+    this.editApiKey = editApiKey;
     this.editBudget = editBudget;
     this.editDays = editDays;
     this.editDestination = editDestination;
@@ -92,6 +97,12 @@ public final class ActivityCreateTripBinding implements ViewBinding {
       id = R.id.btnCreate;
       MaterialButton btnCreate = ViewBindings.findChildViewById(rootView, id);
       if (btnCreate == null) {
+        break missingId;
+      }
+
+      id = R.id.editApiKey;
+      TextInputEditText editApiKey = ViewBindings.findChildViewById(rootView, id);
+      if (editApiKey == null) {
         break missingId;
       }
 
@@ -137,8 +148,9 @@ public final class ActivityCreateTripBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityCreateTripBinding((CoordinatorLayout) rootView, btnCreate, editBudget,
-          editDays, editDestination, editStartDate, editTitle, spinnerCurrency, toolbar);
+      return new ActivityCreateTripBinding((CoordinatorLayout) rootView, btnCreate, editApiKey,
+          editBudget, editDays, editDestination, editStartDate, editTitle, spinnerCurrency,
+          toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

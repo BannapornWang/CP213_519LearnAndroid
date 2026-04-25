@@ -10,5 +10,5 @@ public final class BuildConfig {
   public static final int VERSION_CODE = 1;
   public static final String VERSION_NAME = "1.0";
   // Field from default config.
-  public static final String GEMINI_API_KEY = "AIzaSyC0w9r_HkjHGYYGjYoCKmRzp8C9xTOGv2Y";
+  public static final String GEMINI_API_KEY = "AIzaSyDDRV5sMLQ17br7U5nAmNjyoI2804yuwn0";
 }

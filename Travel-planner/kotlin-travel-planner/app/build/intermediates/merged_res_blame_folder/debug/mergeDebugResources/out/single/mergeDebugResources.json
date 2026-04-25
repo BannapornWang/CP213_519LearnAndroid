@@ -12,12 +12,24 @@
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\activity_journal.xml"
     },
     {
+        "merged": "com.travelplanner.app-debug-55:/layout_activity_trip_detail.xml.flat",
+        "source": "com.travelplanner.app-main-57:/layout/activity_trip_detail.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-debug-55:\\drawable_bg_chip_food.xml.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\drawable\\bg_chip_food.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-debug-55:\\drawable_bg_progress_fill.xml.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\drawable\\bg_progress_fill.xml"
+    },
+    {
+        "merged": "com.travelplanner.app-debug-55:/layout_item_place.xml.flat",
+        "source": "com.travelplanner.app-main-57:/layout/item_place.xml"
+    },
+    {
+        "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-debug-55:\\layout_activity_explore.xml.flat",
+        "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\layout\\activity_explore.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-debug-55:\\layout_activity_main.xml.flat",
@@ -36,8 +48,8 @@
         "source": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-main-57:\\drawable\\bg_pill.xml"
     },
     {
-        "merged": "com.travelplanner.app-debug-55:/layout_activity_explore.xml.flat",
-        "source": "com.travelplanner.app-main-57:/layout/activity_explore.xml"
+        "merged": "com.travelplanner.app-debug-55:/layout_activity_create_trip.xml.flat",
+        "source": "com.travelplanner.app-main-57:/layout/activity_create_trip.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\.gradle\\daemon\\9.0.0\\com.travelplanner.app-debug-55:\\drawable_bg_progress_accommodation.xml.flat",

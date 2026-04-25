@@ -60,6 +60,7 @@ id chipGroupFilter
 id chipGroupMood
 id chipGroupVibes
 id editAmount
+id editApiKey
 id editBudget
 id editDays
 id editDescription

@@ -39,10 +39,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createTrip(
         title: String, destination: String, startDate: String,
-        endDate: String, budget: Double, currency: String, days: Int
+        endDate: String, budget: Double, currency: String, days: Int, apiKey: String
     ) = viewModelScope.launch {
         try {
-            val itinerary = ItineraryUtils.generateItinerary(destination, startDate, days, budget)
+            val itinerary = ItineraryUtils.generateItinerary(destination, startDate, days, budget, apiKey)
             repo.createTrip(title, destination, startDate, endDate, budget, currency, itinerary)
             _tripCreatedEvent.value = true
         } catch (e: Exception) {

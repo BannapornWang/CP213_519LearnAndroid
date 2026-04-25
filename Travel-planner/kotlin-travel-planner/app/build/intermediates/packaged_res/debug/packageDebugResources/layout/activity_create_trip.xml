@@ -110,6 +110,19 @@
                 android:layout_marginBottom="14dp"
                 android:entries="@array/currencies" />
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="14dp"
+                android:hint="Gemini API Key (Optional)">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editApiKey"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCreate"
                 android:layout_width="match_parent"

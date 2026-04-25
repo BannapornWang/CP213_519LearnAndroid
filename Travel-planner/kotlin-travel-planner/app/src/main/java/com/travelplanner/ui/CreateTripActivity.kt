@@ -42,6 +42,9 @@ class CreateTripActivity : AppCompatActivity() {
 
         binding.btnCreate.setOnClickListener { createTrip() }
         binding.editStartDate.setOnClickListener { showDatePicker() }
+
+        val prefs = getSharedPreferences("travel_prefs", android.content.Context.MODE_PRIVATE)
+        binding.editApiKey.setText(prefs.getString("saved_api_key", ""))
     }
 
     private fun showDatePicker() {
@@ -68,6 +71,7 @@ class CreateTripActivity : AppCompatActivity() {
         val daysStr     = binding.editDays.text.toString().trim()
         val budgetStr   = binding.editBudget.text.toString().trim()
         val currency    = binding.spinnerCurrency.selectedItem?.toString() ?: "THB"
+        val apiKey      = binding.editApiKey.text.toString().trim()
 
         if (title.isEmpty() || destination.isEmpty() || startDate.isEmpty() ||
             daysStr.isEmpty() || budgetStr.isEmpty()) {
@@ -91,6 +95,9 @@ class CreateTripActivity : AppCompatActivity() {
         binding.btnCreate.isEnabled = false
         binding.btnCreate.text = "Generating AI Itinerary..."
 
-        viewModel.createTrip(title, destination, startDate, endDate, budget, currency, days)
+        val prefs = getSharedPreferences("travel_prefs", android.content.Context.MODE_PRIVATE)
+        prefs.edit().putString("saved_api_key", apiKey).apply()
+
+        viewModel.createTrip(title, destination, startDate, endDate, budget, currency, days, apiKey)
     }
 }
