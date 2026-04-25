@@ -20,6 +20,9 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val _tripCreatedEvent = MutableLiveData<Boolean>()
     val tripCreatedEvent: LiveData<Boolean> = _tripCreatedEvent
 
+    private val _errorMessage = MutableLiveData<String?>()
+    val errorMessage: LiveData<String?> = _errorMessage
+
     // ─── Load ─────────────────────────────────────────────────────────────────
 
     fun loadTrip(id: String) = viewModelScope.launch {
@@ -38,9 +41,18 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         title: String, destination: String, startDate: String,
         endDate: String, budget: Double, currency: String, days: Int
     ) = viewModelScope.launch {
-        val itinerary = ItineraryUtils.generateItinerary(destination, startDate, days, budget)
-        repo.createTrip(title, destination, startDate, endDate, budget, currency, itinerary)
-        _tripCreatedEvent.value = true
+        try {
+            val itinerary = ItineraryUtils.generateItinerary(destination, startDate, days, budget)
+            repo.createTrip(title, destination, startDate, endDate, budget, currency, itinerary)
+            _tripCreatedEvent.value = true
+        } catch (e: Exception) {
+            _errorMessage.value = "Failed to create trip: ${e.message}"
+            _tripCreatedEvent.value = false
+        }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
     }
 
     // ─── Update ───────────────────────────────────────────────────────────────

@@ -27,6 +27,16 @@ class CreateTripActivity : AppCompatActivity() {
             if (created == true) {
                 Toast.makeText(this, "Trip created with AI itinerary!", Toast.LENGTH_SHORT).show()
                 finish()
+            } else if (created == false) {
+                binding.btnCreate.isEnabled = true
+                binding.btnCreate.text = "Create Trip"
+            }
+        }
+
+        viewModel.errorMessage.observe(this) { message ->
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                viewModel.clearError()
             }
         }
 
