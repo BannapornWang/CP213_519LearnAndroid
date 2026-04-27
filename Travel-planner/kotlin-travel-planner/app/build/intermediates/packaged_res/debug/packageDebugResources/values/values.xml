@@ -9,7 +9,7 @@
         <item>GBP</item>
     </string-array>
     <color name="accent">#F97316</color>
-    <color name="background">#0D1321</color>
+    <color name="background">#1A1F2B</color>
     <color name="border">#334155</color>
     <color name="destructive">#EF4444</color>
     <color name="muted">#020617</color>
@@ -39,7 +39,7 @@
     <string name="no_trips">No trips yet.\nTap + to plan your first adventure!</string>
     <string name="optimize_route">Optimize Route</string>
     <string name="plan_a_trip">Plan a Trip</string>
-    <style name="Theme.TravelPlanner" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="Theme.TravelPlanner" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/on_primary</item>

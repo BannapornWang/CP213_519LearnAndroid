@@ -38,6 +38,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,6 +53,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,6 +69,8 @@
                     android:layout_height="wrap_content"
                     android:focusable="false"
                     android:clickable="true"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -79,6 +85,8 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:inputType="number"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:text="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,6 +100,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionDone"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
                     android:inputType="numberDecimal" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,18 +120,6 @@
                 android:layout_marginBottom="14dp"
                 android:entries="@array/currencies" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                android:hint="Gemini API Key (Optional)">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editApiKey"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCreate"

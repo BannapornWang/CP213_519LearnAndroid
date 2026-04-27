@@ -2,9 +2,11 @@ package com.travelplanner.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.travelplanner.R
 import com.travelplanner.databinding.ActivityCreateTripBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -43,8 +45,12 @@ class CreateTripActivity : AppCompatActivity() {
         binding.btnCreate.setOnClickListener { createTrip() }
         binding.editStartDate.setOnClickListener { showDatePicker() }
 
-        val prefs = getSharedPreferences("travel_prefs", android.content.Context.MODE_PRIVATE)
-        binding.editApiKey.setText(prefs.getString("saved_api_key", ""))
+        // Fix Spinner text visibility
+        val currencies = resources.getStringArray(com.travelplanner.R.array.currencies)
+        binding.spinnerCurrency.adapter = ArrayAdapter(this, com.travelplanner.R.layout.spinner_item, currencies).also {
+            it.setDropDownViewResource(com.travelplanner.R.layout.spinner_item)
+        }
+
     }
 
     private fun showDatePicker() {
@@ -71,7 +77,7 @@ class CreateTripActivity : AppCompatActivity() {
         val daysStr     = binding.editDays.text.toString().trim()
         val budgetStr   = binding.editBudget.text.toString().trim()
         val currency    = binding.spinnerCurrency.selectedItem?.toString() ?: "THB"
-        val apiKey      = binding.editApiKey.text.toString().trim()
+        val apiKey      = ""
 
         if (title.isEmpty() || destination.isEmpty() || startDate.isEmpty() ||
             daysStr.isEmpty() || budgetStr.isEmpty()) {
@@ -95,8 +101,6 @@ class CreateTripActivity : AppCompatActivity() {
         binding.btnCreate.isEnabled = false
         binding.btnCreate.text = "Generating AI Itinerary..."
 
-        val prefs = getSharedPreferences("travel_prefs", android.content.Context.MODE_PRIVATE)
-        prefs.edit().putString("saved_api_key", apiKey).apply()
 
         viewModel.createTrip(title, destination, startDate, endDate, budget, currency, days, apiKey)
     }

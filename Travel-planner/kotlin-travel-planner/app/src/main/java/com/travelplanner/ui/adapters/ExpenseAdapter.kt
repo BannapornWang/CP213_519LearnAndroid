@@ -26,11 +26,12 @@ class ExpenseAdapter(
         val expense = getItem(position)
         val style   = catStyle(expense.category)
         val color   = Color.parseColor(style.color)
-        val bgAlpha = Color.argb(51, Color.red(color), Color.green(color), Color.blue(color))
+        val bgAlpha = Color.argb(204, Color.red(color), Color.green(color), Color.blue(color)) // 80% alpha
 
         with(holder.binding) {
             textCategoryIcon.text = style.emoji
             textCategoryIcon.background.setTint(bgAlpha)
+            textCategoryIcon.setTextColor(Color.WHITE) // White icon for maximum contrast
 
             textDescription.text = expense.description
             textDate.text        = "${BudgetUtils.formatShortDate(expense.date)} · ${expense.category.name.lowercase()}"

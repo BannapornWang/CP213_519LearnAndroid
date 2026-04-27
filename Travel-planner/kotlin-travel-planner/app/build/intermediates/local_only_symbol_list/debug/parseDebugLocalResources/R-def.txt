@@ -60,7 +60,6 @@ id chipGroupFilter
 id chipGroupMood
 id chipGroupVibes
 id editAmount
-id editApiKey
 id editBudget
 id editDays
 id editDescription
@@ -167,6 +166,7 @@ layout item_journal_trip
 layout item_place
 layout item_suggestion
 layout item_trip
+layout spinner_item
 menu menu_bottom_nav
 mipmap ic_launcher
 mipmap ic_launcher_round

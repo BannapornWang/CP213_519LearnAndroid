@@ -15,6 +15,7 @@ import com.travelplanner.data.Trip
 import com.travelplanner.databinding.FragmentExploreBinding
 import com.travelplanner.ui.adapters.SuggestionAdapter
 import com.travelplanner.utils.ItineraryUtils
+import com.travelplanner.R
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -54,10 +55,18 @@ class ExploreFragment : Fragment() {
             "local food" to "Local Food", "nature peaceful" to "Nature Walk",
             "rooftop scenic" to "Rooftop", "cooking experience" to "Cooking Class")
 
+        val density = resources.displayMetrics.density
         vibes.forEach { (query, label) ->
             val chip = com.google.android.material.chip.Chip(requireContext()).apply {
                 text = label
                 isCheckable = true
+                
+                // Consistency styling
+                setChipBackgroundColorResource(R.color.surface)
+                setTextColor(context.getColor(R.color.text_primary))
+                setChipStrokeColorResource(R.color.border)
+                chipStrokeWidth = 1 * density
+
                 setOnClickListener {
                     binding.editSearch.setText(query)
                     searchWithAI(query)

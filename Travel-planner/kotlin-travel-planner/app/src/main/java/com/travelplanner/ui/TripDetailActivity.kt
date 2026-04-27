@@ -325,7 +325,7 @@ class TripDetailActivity : AppCompatActivity() {
 
         val hex   = STATUS_COLORS[trip.status] ?: "#6B7280"
         val color = Color.parseColor(hex)
-        val bg    = Color.argb(51, Color.red(color), Color.green(color), Color.blue(color))
+        val bg    = Color.argb(77, Color.red(color), Color.green(color), Color.blue(color))
 
         binding.textStatus.text = STATUS_LABELS[trip.status] ?: trip.status.name
         binding.textStatus.setTextColor(color)
@@ -353,16 +353,24 @@ class TripDetailActivity : AppCompatActivity() {
         binding.chipGroupDays.removeAllViews()
         days.forEachIndexed { idx, day ->
             val chip = Chip(this).apply {
-                text = "Day ${idx + 1}\n${BudgetUtils.formatShortDate(day.date)}"
+                val dayName = "Day ${idx + 1}"
+                val dateStr = BudgetUtils.formatShortDate(day.date)
+                text = "$dayName • $dateStr"
                 isCheckable = true
                 isChecked   = idx == selectedDayIndex
-                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(100f)
+                
+                val density = resources.displayMetrics.density
+                shapeAppearanceModel = shapeAppearanceModel.withCornerSize(12 * density) 
+                
                 if (idx == selectedDayIndex) {
                     setChipBackgroundColorResource(R.color.primary)
                     setTextColor(Color.WHITE)
+                    chipStrokeWidth = 0f
                 } else {
-                    setChipBackgroundColorResource(R.color.muted)
+                    setChipBackgroundColorResource(R.color.surface)
                     setTextColor(getColor(R.color.text_primary))
+                    setChipStrokeColorResource(R.color.border)
+                    chipStrokeWidth = 1 * density
                 }
                 setOnClickListener {
                     selectedDayIndex = idx
@@ -387,7 +395,7 @@ class TripDetailActivity : AppCompatActivity() {
         binding.textRemaining.text = "${if (isOver) "Over " else "Left "}${BudgetUtils.formatCurrency(Math.abs(remaining), trip.currency)}"
         val remainColor = if (isOver) Color.parseColor("#EF4444") else Color.parseColor("#22C55E")
         binding.textRemaining.setTextColor(remainColor)
-        binding.textRemaining.background?.setTint(Color.argb(51,
+        binding.textRemaining.background?.setTint(Color.argb(77,
             Color.red(remainColor), Color.green(remainColor), Color.blue(remainColor)))
 
         binding.textBudgetSpent.text = BudgetUtils.formatCurrency(summary.total, trip.currency)
@@ -461,6 +469,7 @@ class TripDetailActivity : AppCompatActivity() {
         }
 
         binding.chipGroupMood.removeAllViews()
+        val density = resources.displayMetrics.density
         listOf("😊 Happy","😎 Relaxed","🤩 Excited","😴 Tired","😌 Peaceful","🏔 Adventurous").forEach { mood ->
             val key = mood.substringAfter(" ").lowercase()
             val chip = Chip(this).apply {
@@ -468,7 +477,21 @@ class TripDetailActivity : AppCompatActivity() {
                 isCheckable = true
                 isChecked   = trip.mood == key
                 shapeAppearanceModel = shapeAppearanceModel.withCornerSize(100f)
-                setOnClickListener { viewModel.updateMood(trip, key) }
+                
+                // Styling for visibility
+                setChipBackgroundColorResource(if (isChecked) R.color.primary else R.color.surface)
+                setTextColor(if (isChecked) Color.WHITE else getColor(R.color.text_primary))
+                if (!isChecked) {
+                    setChipStrokeColorResource(R.color.border)
+                    chipStrokeWidth = 1 * density
+                } else {
+                    chipStrokeWidth = 0f
+                }
+
+                setOnClickListener { 
+                    viewModel.updateMood(trip, key)
+                    renderRecord(trip, days) // Refresh to update colors
+                }
             }
             binding.chipGroupMood.addView(chip)
         }
@@ -492,8 +515,8 @@ class TripDetailActivity : AppCompatActivity() {
         val editAmt = view.findViewById<EditText>(R.id.editAmount)
         val editDesc= view.findViewById<EditText>(R.id.editDescription)
 
-        spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories).also {
-            it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = ArrayAdapter(this, R.layout.spinner_item, categories).also {
+            it.setDropDownViewResource(R.layout.spinner_item)
         }
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {

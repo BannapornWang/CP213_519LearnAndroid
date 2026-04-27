@@ -1,10 +1,10 @@
 package com.travelplanner.utils
 
+import com.travelplanner.BuildConfig
 import android.util.Log
 import com.travelplanner.data.DayPlan
 import com.travelplanner.data.Place
 import com.travelplanner.data.PlaceSuggestion
-import com.travelplanner.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -21,9 +21,7 @@ import java.util.concurrent.TimeUnit
 
 object ItineraryUtils {
 
-    private val TAG = "ItineraryUtils"
-
-    // ─── Database ─────────────────────────────────────────────────────────────
+    private const val TAG = "ItineraryUtils"
 
     val PLACE_SUGGESTIONS = listOf(
         PlaceSuggestion("1","Grand Palace","Attraction", listOf("cultural","historic","iconic"),4.8,2,150,"The official residence of the Kings of Siam","Na Phra Lan Rd, Bangkok"),
@@ -50,228 +48,49 @@ object ItineraryUtils {
     )
 
     private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(45, TimeUnit.SECONDS)
         .readTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    // ─── AI itinerary generator via Gemini REST API ───────────────────────────
+    private fun getApiKey(): String {
+        return BuildConfig.GEMINI_API_KEY
+    }
 
     suspend fun generateItinerary(destination: String, startDate: String, days: Int, budget: Double, userApiKey: String = ""): List<DayPlan> {
-        val apiKey = if (userApiKey.isNotBlank()) userApiKey else BuildConfig.GEMINI_API_KEY
-        Log.d(TAG, "API Key length: ${apiKey.length}")
+        val apiKey = if (userApiKey.isNotBlank()) userApiKey else getApiKey()
+        Log.d(TAG, "Using API Key starting with: ${apiKey.take(8)}...")
+        
+        // Using dynamic model from BuildConfig (default: gemini-2.5-flash)
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/${BuildConfig.GEMINI_MODEL}:generateContent?key=$apiKey"
 
-        if (apiKey.isEmpty()) {
-            Log.w(TAG, "API key is empty, using mock data")
-            return generateMockItinerary(destination, startDate, days, budget)
-        }
+        val prompt = """Create a detailed travel itinerary for $destination for $days days with a total budget of ${budget.toInt()} THB.
+IMPORTANT: Return ONLY a raw JSON array of objects. Do not include markdown formatting or any other text.
+Each object represents a day and should have:
+- "date": "Day X"
+- "places": an array of objects with:
+    - "name": place name
+    - "category": one of (Attraction, Shopping, Food, Cafe, Nightlife, Nature, Experience, Cultural)
+    - "description": brief summary
+    - "estimatedCost": number in THB
+    - "durationMinutes": number
+    - "transport": how to get there
 
-        val prompt = """Create a travel itinerary for $destination for $days days with a total budget of ${budget.toInt()} THB.
-Return ONLY a JSON array. No explanations, no markdown, no extra text. Just the raw JSON array.
-Format:
-[{"date":"Day 1","places":[{"name":"Place Name","category":"Attraction","description":"Brief description","estimatedCost":500,"durationMinutes":90,"transport":"Metro Line X -> Walk 5 min"}]},{"date":"Day 2","places":[...]}]
-Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultural, Nightlife"""
-
-        val requestBody = JSONObject().apply {
-            put("contents", JSONArray().apply {
-                put(JSONObject().apply {
-                    put("parts", JSONArray().apply {
-                        put(JSONObject().apply {
-                            put("text", prompt)
-                        })
-                    })
-                })
-            })
-        }.toString()
-
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey"
-
-        return withContext(Dispatchers.IO) {
-            try {
-                val request = Request.Builder()
-                    .url(url)
-                    .post(requestBody.toRequestBody("application/json".toMediaType()))
-                    .build()
-
-                val response = httpClient.newCall(request).execute()
-                val body = response.body?.string() ?: ""
-                Log.d(TAG, "Gemini HTTP status: ${response.code}")
-                Log.d(TAG, "Gemini raw response: ${body.take(500)}")
-
-                if (!response.isSuccessful) {
-                    Log.e(TAG, "Gemini API error: $body")
-                    return@withContext generateMockItinerary(destination, startDate, days, budget)
-                }
-
-                val root = JSONObject(body)
-                val text = root
-                    .getJSONArray("candidates")
-                    .getJSONObject(0)
-                    .getJSONObject("content")
-                    .getJSONArray("parts")
-                    .getJSONObject(0)
-                    .getString("text")
-
-                Log.d(TAG, "Gemini text output: ${text.take(300)}")
-                parseAIResponse(text, destination, startDate, days, budget)
-            } catch (e: Exception) {
-                Log.e(TAG, "Exception calling Gemini: ${e.message}", e)
-                generateMockItinerary(destination, startDate, days, budget)
-            }
-        }
-    }
-
-    private fun parseAIResponse(jsonText: String, destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
-        try {
-            val startIndex = jsonText.indexOf('[')
-            val endIndex = jsonText.lastIndexOf(']')
-            if (startIndex == -1 || endIndex == -1) {
-                System.err.println("Gemini Response does not contain a JSON array:\n$jsonText")
-                return generateMockItinerary(destination, startDate, days, budget)
-            }
-            
-            val cleanText = jsonText.substring(startIndex, endIndex + 1)
-            val jsonArray = JSONArray(cleanText)
-            val result = mutableListOf<DayPlan>()
-            
-            val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val cal = Calendar.getInstance().apply { time = fmt.parse(startDate) ?: java.util.Date() }
-
-            for (i in 0 until jsonArray.length()) {
-                val dayObj = jsonArray.getJSONObject(i)
-                
-                val dateStr = fmt.format(cal.time)
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-                
-                val placesArr = dayObj.optJSONArray("places")
-                val dayPlaces = mutableListOf<Place>()
-
-                if (placesArr != null) {
-                    for (j in 0 until placesArr.length()) {
-                        val pObj = placesArr.getJSONObject(j)
-                        dayPlaces.add(
-                            Place(
-                                id = java.util.UUID.randomUUID().toString(),
-                                name = pObj.optString("name", "Unknown"),
-                                category = pObj.optString("category", "Attraction"),
-                                address = "",
-                                durationMinutes = pObj.optInt("durationMinutes", 60),
-                                cost = pObj.optDouble("estimatedCost", 0.0),
-                                transport = pObj.optString("transport", ""),
-                                notes = pObj.optString("description", "")
-                            )
-                        )
-                    }
-                }
-                result.add(DayPlan(date = dateStr, places = dayPlaces))
-            }
-            if (result.isEmpty()) {
-                System.err.println("Gemini returned empty json array")
-                return generateMockItinerary(destination, startDate, days, budget)
-            }
-            
-            // Pad if less than days requested
-            while (result.size < days) {
-                val dateStr = fmt.format(cal.time)
-                cal.add(Calendar.DAY_OF_YEAR, 1)
-                result.add(DayPlan(date = dateStr, places = mutableListOf()))
-            }
-            
-            return result
-        } catch(e: Exception) {
-            e.printStackTrace()
-            return generateMockItinerary(destination, startDate, days, budget)
-        }
-    }
-
-    fun generateMockItinerary(destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
-        val dailyBudget = budget / days
-        val result = mutableListOf<DayPlan>()
-        val usedIds = mutableSetOf<String>()
-        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val cal = Calendar.getInstance().apply { time = fmt.parse(startDate) ?: java.util.Date() }
-
-        repeat(days) { _ ->
-            val dateStr = fmt.format(cal.time)
-            cal.add(Calendar.DAY_OF_YEAR, 1)
-
-            val dayPlaces = mutableListOf<Place>()
-            var remainBudget = dailyBudget
-            var remainTime = 600
-
-            val mappedSuggestions = PLACE_SUGGESTIONS.map { s ->
-                val newName = if (destination.isNotBlank()) "${s.name} ($destination)" else s.name
-                val newAddress = if (destination.isNotBlank()) destination else s.address
-                s.copy(name = newName, address = newAddress)
-            }
-            val available = mappedSuggestions.filter { it.id !in usedIds }.shuffled()
-            for (s in available) {
-                if (dayPlaces.size >= 4) break
-                if (s.durationMinutes > remainTime) continue
-                val (minC, maxC) = COST_RANGES[s.category] ?: Pair(100.0, 500.0)
-                val cost = minC + Math.random() * (maxC - minC)
-                if (cost > remainBudget && dayPlaces.isNotEmpty()) continue
-                dayPlaces.add(Place(
-                    id = UUID.randomUUID().toString(),
-                    name = s.name, category = s.category, address = s.address,
-                    durationMinutes = s.durationMinutes,
-                    cost = cost, notes = s.description
-                ))
-                usedIds.add(s.id)
-                remainBudget -= cost
-                remainTime -= (s.durationMinutes + 30)
-            }
-            result.add(DayPlan(date = dateStr, places = dayPlaces))
-        }
-        return result
-    }
-
-    // ─── Smart route optimizer (2-opt) ────────────────────────────────────────
-
-    fun optimizeRoute(places: List<Place>): List<Place> {
-        if (places.size <= 2) return places
-        val opt = places.toMutableList()
-        var improved = true
-        while (improved) {
-            improved = false
-            for (i in 1 until opt.size - 1) {
-                for (j in i + 1 until opt.size) {
-                    val before = dist(opt[i - 1], opt[i]) + dist(opt[i], opt[j])
-                    val after  = dist(opt[i - 1], opt[j]) + dist(opt[j], opt[i])
-                    if (after < before) {
-                        val tmp = opt[i]; opt[i] = opt[j]; opt[j] = tmp
-                        improved = true
-                    }
-                }
-            }
-        }
-        return opt
-    }
-
-    private fun dist(a: Place, b: Place) = Math.random()
-
-    // ─── Vibe search ─────────────────────────────────────────────────────────
-
-    fun searchByVibe(query: String): List<PlaceSuggestion> {
-        val keywords = query.lowercase().split("\\s+".toRegex())
-        return PLACE_SUGGESTIONS.filter { s ->
-            val haystack = "${s.name} ${s.category} ${s.description} ${s.vibes.joinToString(" ")}".lowercase()
-            keywords.any { kw -> haystack.contains(kw) }
-        }.take(6)
-    }
-
-    fun nearbyGems(): List<PlaceSuggestion> = PLACE_SUGGESTIONS.shuffled().take(6)
-
-    // ─── AI Place Search via Gemini ──────────────────────────────────────────
-
-    suspend fun searchPlacesAI(query: String): List<PlaceSuggestion> {
-        val apiKey = BuildConfig.GEMINI_API_KEY
-        if (apiKey.isEmpty()) return searchByVibe(query)
-
-        val prompt = """Search for 5-8 popular places or activities for: "$query".
-Return ONLY a JSON array of objects. No explanations.
-Format:
-[{"id":"ai_1","name":"Place Name","category":"Attraction","vibes":["vibe1","vibe2"],"rating":4.8,"priceLevel":2,"durationMinutes":90,"description":"Short description","address":"Location"}]
-Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultural, Nightlife"""
+Example structure:
+[
+  {
+    "date": "Day 1",
+    "places": [
+      {
+        "name": "Grand Palace",
+        "category": "Attraction",
+        "description": "Historical royal palace complex",
+        "estimatedCost": 500,
+        "durationMinutes": 120,
+        "transport": "Taxi"
+      }
+    ]
+  }
+]"""
 
         val requestBody = JSONObject().apply {
             put("contents", JSONArray().apply {
@@ -281,9 +100,11 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
                     })
                 })
             })
+            // Enforce JSON using GenerationConfig
+            put("generationConfig", JSONObject().apply {
+                put("responseMimeType", "application/json")
+            })
         }.toString()
-
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey"
 
         return withContext(Dispatchers.IO) {
             try {
@@ -294,56 +115,190 @@ Categories allowed: Attraction, Food, Cafe, Shopping, Nature, Experience, Cultur
 
                 val response = httpClient.newCall(request).execute()
                 val body = response.body?.string() ?: ""
-                Log.d(TAG, "Gemini Search HTTP status: ${response.code}")
-                
+                Log.d(TAG, "Raw Response: $body")
+
                 if (!response.isSuccessful) {
-                    Log.e(TAG, "Gemini Search API error: $body")
-                    return@withContext searchByVibe(query)
+                    var errorDetail = ""
+                    try { errorDetail = JSONObject(body).getJSONObject("error").getString("message") } catch(e: Exception) {}
+                    if (errorDetail.isBlank()) errorDetail = response.message
+                    Log.e(TAG, "Gemini Error: ${response.code} - $body")
+                    throw Exception("API Error ${response.code}: $errorDetail")
                 }
 
                 val root = JSONObject(body)
                 val candidates = root.optJSONArray("candidates")
                 if (candidates == null || candidates.length() == 0) {
-                    Log.w(TAG, "No candidates returned from Gemini")
-                    return@withContext searchByVibe(query)
+                    throw Exception("No candidates returned from AI")
                 }
-
-                val text = candidates.getJSONObject(0)
-                    .getJSONObject("content").getJSONArray("parts").getJSONObject(0).getString("text")
-
-                val startIndex = text.indexOf('[')
-                val endIndex = text.lastIndexOf(']')
-                if (startIndex == -1) return@withContext searchByVibe(query)
-
-                val cleanText = text.substring(startIndex, endIndex + 1)
-                val jsonArray = JSONArray(cleanText)
-                val result = mutableListOf<PlaceSuggestion>()
-
-                for (i in 0 until jsonArray.length()) {
-                    val o = jsonArray.getJSONObject(i)
-                    val vibesArr = o.optJSONArray("vibes")
-                    val vibesList = mutableListOf<String>()
-                    if (vibesArr != null) {
-                        for (j in 0 until vibesArr.length()) vibesList.add(vibesArr.getString(j))
-                    }
-
-                    result.add(PlaceSuggestion(
-                        id = UUID.randomUUID().toString(),
-                        name = o.optString("name", "Unknown"),
-                        category = o.optString("category", "Attraction"),
-                        vibes = vibesList,
-                        rating = o.optDouble("rating", 4.5),
-                        priceLevel = o.optInt("priceLevel", 1),
-                        durationMinutes = o.optInt("durationMinutes", 60),
-                        description = o.optString("description", ""),
-                        address = o.optString("address", "")
-                    ))
+                
+                val contentObj = candidates.getJSONObject(0).optJSONObject("content")
+                if (contentObj == null) {
+                    throw Exception("AI response blocked. Please check your prompt.")
                 }
-                result
+                val text = contentObj.getJSONArray("parts").getJSONObject(0).getString("text")
+
+                parseAIResponse(text, destination, startDate, days, budget)
             } catch (e: Exception) {
-                Log.e(TAG, "AI Search failed", e)
-                searchByVibe(query)
+                Log.e(TAG, "Exception in generateItinerary: ${e.message}")
+                throw Exception(e.message ?: "Unknown Error during generation")
             }
         }
+    }
+
+    private fun parseAIResponse(jsonText: String, destination: String, startDate: String, days: Int, budget: Double): List<DayPlan> {
+        return try {
+            // Remove markdown code blocks if present
+            var cleanText = jsonText.trim()
+            if (cleanText.startsWith("```json")) {
+                cleanText = cleanText.removePrefix("```json")
+            }
+            if (cleanText.endsWith("```")) {
+                cleanText = cleanText.removeSuffix("```")
+            }
+            cleanText = cleanText.trim()
+
+            val startIndex = cleanText.indexOf('[')
+            val endIndex = cleanText.lastIndexOf(']')
+            if (startIndex == -1) {
+                Log.e(TAG, "Invalid JSON structure: $cleanText")
+                throw Exception("AI returned invalid structure")
+            }
+            
+            cleanText = cleanText.substring(startIndex, endIndex + 1)
+            val jsonArray = JSONArray(cleanText)
+            val result = mutableListOf<DayPlan>()
+            val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val cal = Calendar.getInstance().apply { 
+                time = try { fmt.parse(startDate)!! } catch(e:Exception) { java.util.Date() } 
+            }
+
+            for (i in 0 until jsonArray.length()) {
+                val dayObj = jsonArray.getJSONObject(i)
+                val dateStr = fmt.format(cal.time)
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                
+                val placesArr = dayObj.optJSONArray("places") ?: JSONArray()
+                val dayPlaces = mutableListOf<Place>()
+                for (j in 0 until placesArr.length()) {
+                    val p = placesArr.getJSONObject(j)
+                    dayPlaces.add(Place(
+                        id = UUID.randomUUID().toString(),
+                        name = p.optString("name", "Unknown"),
+                        category = p.optString("category", "Attraction"),
+                        address = "",
+                        durationMinutes = p.optInt("durationMinutes", 60),
+                        cost = p.optDouble("estimatedCost", 0.0),
+                        transport = p.optString("transport", ""),
+                        notes = p.optString("description", "")
+                    ))
+                }
+                result.add(DayPlan(dateStr, dayPlaces))
+            }
+            result.ifEmpty { throw Exception("No days generated by AI") }
+            return result
+        } catch (e: Exception) {
+            Log.e(TAG, "Parse Error: ${e.message}")
+            throw Exception("Failed to parse AI response: ${e.message}")
+        }
+    }
+
+    fun generateMockItinerary(destination: String, startDate: String, days: Int, budget: Double, isFailed: Boolean = false): List<DayPlan> {
+        val result = mutableListOf<DayPlan>()
+        val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val cal = Calendar.getInstance().apply { time = try { fmt.parse(startDate)!! } catch(e:Exception) { java.util.Date() } }
+
+        repeat(days) {
+            val dateStr = fmt.format(cal.time)
+            cal.add(Calendar.DAY_OF_YEAR, 1)
+            val tag = if (isFailed) " (Local)" else ""
+            val places = mutableListOf(
+                Place(UUID.randomUUID().toString(), "Visit $destination $tag", "Attraction", destination, 120, budget/(days*3), "Walk", "Exploring the city"),
+                Place(UUID.randomUUID().toString(), "Local Food $tag", "Food", destination, 60, 200.0, "Taxi", "Trying local dishes")
+            )
+            result.add(DayPlan(dateStr, places))
+        }
+        return result
+    }
+
+    fun optimizeRoute(places: List<Place>): List<Place> = places
+    private fun dist(a: Place, b: Place) = Math.random()
+
+    fun searchByVibe(query: String): List<PlaceSuggestion> = PLACE_SUGGESTIONS.take(6)
+    fun nearbyGems(): List<PlaceSuggestion> = PLACE_SUGGESTIONS.shuffled().take(6)
+    suspend fun searchPlacesAI(query: String): List<PlaceSuggestion> = withContext(Dispatchers.IO) {
+        val apiKey = getApiKey()
+        // Using dynamic model from BuildConfig (default: gemini-2.5-flash)
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/${BuildConfig.GEMINI_MODEL}:generateContent?key=$apiKey"
+        
+        val prompt = """Recommend 5 to 7 interesting travel places based on the user's vibe query: "$query".
+IMPORTANT: Return ONLY a raw JSON array of objects.
+Each object must have:
+- "name": string
+- "category": string (e.g. Attraction, Cafe, Shopping, Food, Nature, Experience, Nightlife)
+- "tags": array of 1 to 3 descriptive short string tags
+- "rating": number 1.0 to 5.0
+- "priceLevel": integer 1 to 4
+- "durationMinutes": integer (e.g. 60, 120)
+- "description": brief summary
+- "address": string location
+"""
+        val requestBody = JSONObject().apply {
+            put("contents", JSONArray().apply {
+                put(JSONObject().apply {
+                    put("parts", JSONArray().apply {
+                        put(JSONObject().apply { put("text", prompt) })
+                    })
+                })
+            })
+            put("generationConfig", JSONObject().apply {
+                put("responseMimeType", "application/json")
+            })
+        }.toString()
+
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody.toRequestBody("application/json".toMediaType()))
+            .build()
+            
+        val response = httpClient.newCall(request).execute()
+        val body = response.body?.string() ?: ""
+        
+        if (!response.isSuccessful) {
+            var errorDetail = ""
+            try { errorDetail = JSONObject(body).getJSONObject("error").getString("message") } catch(e: Exception) {}
+            if (errorDetail.isBlank()) errorDetail = response.message
+            throw Exception("API Error ${response.code}: $errorDetail")
+        }
+        
+        val root = JSONObject(body)
+        val candidates = root.optJSONArray("candidates") ?: throw Exception("No candidates returned from AI")
+        val contentObj = candidates.getJSONObject(0).optJSONObject("content") ?: throw Exception("AI response blocked. Try another query.")
+        val text = contentObj.getJSONArray("parts").getJSONObject(0).getString("text")
+        
+        val jsonArray = JSONArray(text.trim())
+        val results = mutableListOf<PlaceSuggestion>()
+        
+        for (i in 0 until jsonArray.length()) {
+            val obj = jsonArray.getJSONObject(i)
+            val vibesArr = obj.optJSONArray("tags") ?: JSONArray()
+            val vibes = mutableListOf<String>()
+            for (j in 0 until vibesArr.length()) {
+                vibes.add(vibesArr.getString(j))
+            }
+            results.add(PlaceSuggestion(
+                id = UUID.randomUUID().toString(),
+                name = obj.optString("name", "Unknown"),
+                category = obj.optString("category", "Uncategorized"),
+                vibes = vibes,
+                rating = obj.optDouble("rating", 4.0),
+                priceLevel = obj.optInt("priceLevel", 2),
+                durationMinutes = obj.optInt("durationMinutes", 60),
+                description = obj.optString("description", ""),
+                address = obj.optString("address", "")
+            ))
+        }
+        
+        if (results.isEmpty()) throw Exception("No places were generated for your query.")
+        return@withContext results
     }
 }
