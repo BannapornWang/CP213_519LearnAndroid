@@ -46,7 +46,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
             repo.createTrip(title, destination, startDate, endDate, budget, currency, itinerary)
             _tripCreatedEvent.value = true
         } catch (e: Exception) {
-            _errorMessage.value = "Failed to create trip: ${e.message}"
+            val errorMessage = e.message ?: "Unknown Error"
+            _errorMessage.value = "Failed to create trip: $errorMessage"
             _tripCreatedEvent.value = false
         }
     }

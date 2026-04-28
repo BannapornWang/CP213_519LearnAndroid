@@ -17,11 +17,19 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object ItineraryUtils {
 
     private const val TAG = "ItineraryUtils"
+
+    // Model fallback chain: try primary first, then backup if primary is unavailable
+    // Note: only models available on v1beta are listed here
+    private val MODEL_FALLBACK_CHAIN = listOf(
+        BuildConfig.GEMINI_MODEL,   // e.g. gemini-2.0-flash-lite (from local.properties)
+        "gemini-2.0-flash"          // backup: more stable
+    )
 
     val PLACE_SUGGESTIONS = listOf(
         PlaceSuggestion("1","Grand Palace","Attraction", listOf("cultural","historic","iconic"),4.8,2,150,"The official residence of the Kings of Siam","Na Phra Lan Rd, Bangkok"),
@@ -48,51 +56,82 @@ object ItineraryUtils {
     )
 
     private val httpClient = OkHttpClient.Builder()
-        .connectTimeout(45, TimeUnit.SECONDS)
-        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)   // increased: AI generation can be slow
+        .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
-    private fun getApiKey(): String {
-        return BuildConfig.GEMINI_API_KEY
+    private fun getGeminiKey(): String = BuildConfig.GEMINI_API_KEY
+    private fun getGroqKey(): String = BuildConfig.GROQ_API_KEY
+
+    /** Returns true for errors that are safe to retry (server busy, rate limit, network) */
+    private fun isRetryable(e: Exception): Boolean {
+        val msg = e.message ?: ""
+        return e is IOException
+                || msg.contains("503")
+                || msg.contains("429")
+                || msg.contains("500")
+                || msg.contains("high demand", ignoreCase = true)
+                || msg.contains("timeout", ignoreCase = true)
     }
 
-    suspend fun generateItinerary(destination: String, startDate: String, days: Int, budget: Double, userApiKey: String = ""): List<DayPlan> {
-        val apiKey = if (userApiKey.isNotBlank()) userApiKey else getApiKey()
-        Log.d(TAG, "Using API Key starting with: ${apiKey.take(8)}...")
-        
-        // Using dynamic model from BuildConfig (default: gemini-2.5-flash)
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/${BuildConfig.GEMINI_MODEL}:generateContent?key=$apiKey"
+    /**
+     * Call Groq API (OpenAI-compatible chat completions).
+     * Returns the raw text content from the response.
+     */
+    private fun callGroq(prompt: String, maxTokens: Int = 1200): String {
+        val key = getGroqKey()
+        if (key.isBlank()) throw Exception("No Groq key configured")
 
-        val prompt = """Create a detailed travel itinerary for $destination for $days days with a total budget of ${budget.toInt()} THB.
-IMPORTANT: Return ONLY a raw JSON array of objects. Do not include markdown formatting or any other text.
-Each object represents a day and should have:
-- "date": "Day X"
-- "places": an array of objects with:
-    - "name": place name
-    - "category": one of (Attraction, Shopping, Food, Cafe, Nightlife, Nature, Experience, Cultural)
-    - "description": brief summary
-    - "estimatedCost": number in THB
-    - "durationMinutes": number
-    - "transport": how to get there
+        val url = "https://api.groq.com/openai/v1/chat/completions"
+        val body = JSONObject().apply {
+            put("model", "llama-3.3-70b-versatile")
+            put("messages", JSONArray().apply {
+                put(JSONObject().apply {
+                    put("role", "user")
+                    put("content", prompt)
+                })
+            })
+            put("response_format", JSONObject().apply { put("type", "json_object") })
+            put("max_tokens", maxTokens)
+            put("temperature", 0.5)
+        }.toString()
 
-Example structure:
-[
-  {
-    "date": "Day 1",
-    "places": [
-      {
-        "name": "Grand Palace",
-        "category": "Attraction",
-        "description": "Historical royal palace complex",
-        "estimatedCost": 500,
-        "durationMinutes": 120,
-        "transport": "Taxi"
-      }
-    ]
-  }
-]"""
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Authorization", "Bearer $key")
+            .post(body.toRequestBody("application/json".toMediaType()))
+            .build()
 
-        val requestBody = JSONObject().apply {
+        val response = httpClient.newCall(request).execute()
+        val responseBody = response.body?.string() ?: ""
+        Log.d(TAG, "[Groq] HTTP ${response.code}")
+
+        if (!response.isSuccessful) {
+            var errorMsg = ""
+            try { errorMsg = JSONObject(responseBody).getJSONObject("error").getString("message") } catch (e: Exception) {}
+            if (errorMsg.isBlank()) errorMsg = response.message
+            throw Exception("${response.code}: $errorMsg")
+        }
+
+        // Groq wraps the JSON inside a json_object — extract the actual array from "result" or root
+        val root = JSONObject(responseBody)
+        return root.getJSONArray("choices")
+            .getJSONObject(0)
+            .getJSONObject("message")
+            .getString("content")
+    }
+
+    /**
+     * Call Gemini API.
+     * Returns the raw text content from the response.
+     */
+    private fun callGemini(model: String, prompt: String, maxTokens: Int = 1200): String {
+        val key = getGeminiKey()
+        if (key.isBlank()) throw Exception("No Gemini key configured")
+
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$key"
+        val body = JSONObject().apply {
             put("contents", JSONArray().apply {
                 put(JSONObject().apply {
                     put("parts", JSONArray().apply {
@@ -100,48 +139,117 @@ Example structure:
                     })
                 })
             })
-            // Enforce JSON using GenerationConfig
             put("generationConfig", JSONObject().apply {
                 put("responseMimeType", "application/json")
+                put("maxOutputTokens", maxTokens)
+                put("temperature", 0.5)
             })
         }.toString()
 
-        return withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(url)
+            .post(body.toRequestBody("application/json".toMediaType()))
+            .build()
+
+        val response = httpClient.newCall(request).execute()
+        val responseBody = response.body?.string() ?: ""
+        Log.d(TAG, "[Gemini/$model] HTTP ${response.code}")
+
+        if (!response.isSuccessful) {
+            var errorMsg = ""
+            try { errorMsg = JSONObject(responseBody).getJSONObject("error").getString("message") } catch (e: Exception) {}
+            if (errorMsg.isBlank()) errorMsg = response.message
+            throw Exception("${response.code}: $errorMsg")
+        }
+
+        val root = JSONObject(responseBody)
+        val candidates = root.optJSONArray("candidates") ?: throw Exception("No candidates from Gemini")
+        val contentObj = candidates.getJSONObject(0).optJSONObject("content")
+            ?: throw Exception("Gemini response blocked")
+        return contentObj.getJSONArray("parts").getJSONObject(0).getString("text")
+    }
+
+    /**
+     * Try calling with exponential backoff. Returns raw text on success.
+     * Throws on exhausted retries.
+     */
+    private suspend fun callWithRetry(
+        tag: String,
+        maxRetries: Int = 3,
+        call: () -> String
+    ): String {
+        var retryCount = 0
+        var lastException: Exception? = null
+        while (retryCount < maxRetries) {
             try {
-                val request = Request.Builder()
-                    .url(url)
-                    .post(requestBody.toRequestBody("application/json".toMediaType()))
-                    .build()
-
-                val response = httpClient.newCall(request).execute()
-                val body = response.body?.string() ?: ""
-                Log.d(TAG, "Raw Response: $body")
-
-                if (!response.isSuccessful) {
-                    var errorDetail = ""
-                    try { errorDetail = JSONObject(body).getJSONObject("error").getString("message") } catch(e: Exception) {}
-                    if (errorDetail.isBlank()) errorDetail = response.message
-                    Log.e(TAG, "Gemini Error: ${response.code} - $body")
-                    throw Exception("API Error ${response.code}: $errorDetail")
-                }
-
-                val root = JSONObject(body)
-                val candidates = root.optJSONArray("candidates")
-                if (candidates == null || candidates.length() == 0) {
-                    throw Exception("No candidates returned from AI")
-                }
-                
-                val contentObj = candidates.getJSONObject(0).optJSONObject("content")
-                if (contentObj == null) {
-                    throw Exception("AI response blocked. Please check your prompt.")
-                }
-                val text = contentObj.getJSONArray("parts").getJSONObject(0).getString("text")
-
-                parseAIResponse(text, destination, startDate, days, budget)
+                return call()
             } catch (e: Exception) {
-                Log.e(TAG, "Exception in generateItinerary: ${e.message}")
-                throw Exception(e.message ?: "Unknown Error during generation")
+                lastException = e
+                Log.w(TAG, "[$tag] Attempt ${retryCount + 1} failed: ${e.message}")
+                retryCount++
+                if (isRetryable(e) && retryCount < maxRetries) {
+                    val delayMs = minOf(2000L * (1 shl (retryCount - 1)), 10000L)
+                    Log.d(TAG, "[$tag] Waiting ${delayMs}ms before retry...")
+                    kotlinx.coroutines.delay(delayMs)
+                } else {
+                    throw Exception(lastException?.message ?: "$tag failed")
+                }
             }
+        }
+        throw Exception(lastException?.message ?: "$tag exhausted retries")
+    }
+
+    suspend fun generateItinerary(destination: String, startDate: String, days: Int, budget: Double, userApiKey: String = ""): List<DayPlan> {
+        val prompt = """Return a JSON object with key "days" containing an array for a $days-day trip to $destination, budget ${budget.toInt()} THB.
+Each element: {"date":"Day N","places":[{"name":str,"category":str,"description":str,"estimatedCost":int,"durationMinutes":int,"transport":str}]}.
+Categories: Attraction|Shopping|Food|Cafe|Nightlife|Nature|Experience|Cultural. No markdown. Return only JSON."""
+
+        return withContext(Dispatchers.IO) {
+            var lastException: Exception? = null
+
+            // 1. Try Groq first (faster + higher free quota)
+            if (getGroqKey().isNotBlank()) {
+                try {
+                    Log.d(TAG, "generateItinerary: trying Groq...")
+                    val text = callWithRetry("Groq") { callGroq(prompt, maxTokens = 1500) }
+                    // Groq with json_object wraps in an object — extract the "days" array
+                    val jsonRoot = JSONObject(text)
+                    val arrayText = when {
+                        jsonRoot.has("days") -> jsonRoot.getJSONArray("days").toString()
+                        else -> {
+                            // fallback: find first array in the object
+                            var found = ""
+                            for (key in jsonRoot.keys()) {
+                                val v = jsonRoot.opt(key)
+                                if (v is JSONArray) { found = v.toString(); break }
+                            }
+                            found.ifEmpty { throw Exception("Groq returned unexpected structure") }
+                        }
+                    }
+                    return@withContext parseAIResponse(arrayText, destination, startDate, days, budget)
+                } catch (e: Exception) {
+                    lastException = e
+                    Log.w(TAG, "Groq failed, falling back to Gemini: ${e.message}")
+                }
+            }
+
+            // 2. Fallback: Gemini model chain
+            val geminiPrompt = """Return a JSON array for a $days-day trip to $destination, budget ${budget.toInt()} THB.
+Each element: {"date":"Day N","places":[{"name":str,"category":str,"description":str,"estimatedCost":int,"durationMinutes":int,"transport":str}]}.
+Categories: Attraction|Shopping|Food|Cafe|Nightlife|Nature|Experience|Cultural. No markdown."""
+
+            for (model in MODEL_FALLBACK_CHAIN) {
+                try {
+                    Log.d(TAG, "generateItinerary: trying Gemini/$model...")
+                    val text = callWithRetry("Gemini/$model") { callGemini(model, geminiPrompt, 1200) }
+                    return@withContext parseAIResponse(text, destination, startDate, days, budget)
+                } catch (e: Exception) {
+                    lastException = e
+                    Log.w(TAG, "Gemini/$model failed: ${e.message}")
+                }
+            }
+
+            throw Exception(lastException?.message ?: "All AI providers failed. Please try again later.")
         }
     }
 
@@ -226,65 +334,75 @@ Example structure:
     fun searchByVibe(query: String): List<PlaceSuggestion> = PLACE_SUGGESTIONS.take(6)
     fun nearbyGems(): List<PlaceSuggestion> = PLACE_SUGGESTIONS.shuffled().take(6)
     suspend fun searchPlacesAI(query: String): List<PlaceSuggestion> = withContext(Dispatchers.IO) {
-        val apiKey = getApiKey()
-        // Using dynamic model from BuildConfig (default: gemini-2.5-flash)
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/${BuildConfig.GEMINI_MODEL}:generateContent?key=$apiKey"
-        
-        val prompt = """Recommend 5 to 7 interesting travel places based on the user's vibe query: "$query".
-IMPORTANT: Return ONLY a raw JSON array of objects.
-Each object must have:
-- "name": string
-- "category": string (e.g. Attraction, Cafe, Shopping, Food, Nature, Experience, Nightlife)
-- "tags": array of 1 to 3 descriptive short string tags
-- "rating": number 1.0 to 5.0
-- "priceLevel": integer 1 to 4
-- "durationMinutes": integer (e.g. 60, 120)
-- "description": brief summary
-- "address": string location
-"""
-        val requestBody = JSONObject().apply {
+        val prompt = """Return a JSON object with key "places" containing an array of 5 travel places for vibe: "$query".
+Each: {"name":str,"category":str,"tags":[str],"rating":float,"priceLevel":int,"durationMinutes":int,"description":str,"address":str}. Return only JSON."""
+
+        var lastException: Exception? = null
+
+        // 1. Try Groq first
+        if (getGroqKey().isNotBlank()) {
+            try {
+                val text = callWithRetry("Groq/search", maxRetries = 2) { callGroq(prompt, maxTokens = 700) }
+                val jsonRoot = JSONObject(text)
+                val arr = when {
+                    jsonRoot.has("places") -> jsonRoot.getJSONArray("places")
+                    else -> {
+                        var found: JSONArray? = null
+                        for (key in jsonRoot.keys()) { val v = jsonRoot.opt(key); if (v is JSONArray) { found = v; break } }
+                        found ?: throw Exception("Groq returned unexpected structure")
+                    }
+                }
+                val results = parseGroqPlaces(arr)
+                if (results.isNotEmpty()) return@withContext results
+            } catch (e: Exception) {
+                lastException = e
+                Log.w(TAG, "searchPlacesAI Groq failed, falling back to Gemini: ${e.message}")
+            }
+        }
+
+        // 2. Fallback: Gemini
+        val geminiPrompt = """Return a JSON array of 5 travel places for vibe: "$query".
+Each: {"name":str,"category":str,"tags":[str],"rating":float,"priceLevel":int,"durationMinutes":int,"description":str,"address":str}. No markdown."""
+        val geminiBody = JSONObject().apply {
             put("contents", JSONArray().apply {
                 put(JSONObject().apply {
                     put("parts", JSONArray().apply {
-                        put(JSONObject().apply { put("text", prompt) })
+                        put(JSONObject().apply { put("text", geminiPrompt) })
                     })
                 })
             })
             put("generationConfig", JSONObject().apply {
                 put("responseMimeType", "application/json")
+                put("maxOutputTokens", 600)
+                put("temperature", 0.5)
             })
         }.toString()
 
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody.toRequestBody("application/json".toMediaType()))
-            .build()
-            
-        val response = httpClient.newCall(request).execute()
-        val body = response.body?.string() ?: ""
-        
-        if (!response.isSuccessful) {
-            var errorDetail = ""
-            try { errorDetail = JSONObject(body).getJSONObject("error").getString("message") } catch(e: Exception) {}
-            if (errorDetail.isBlank()) errorDetail = response.message
-            throw Exception("API Error ${response.code}: $errorDetail")
+        try {
+            val text = callWithRetry("Gemini/search", maxRetries = 3) {
+                callGemini(BuildConfig.GEMINI_MODEL, geminiPrompt, 600)
+            }
+            val cleanText = text.trim().let {
+                val s = it.indexOf('['); val e = it.lastIndexOf(']')
+                if (s != -1 && e != -1) it.substring(s, e + 1) else it
+            }
+            val results = parseGroqPlaces(JSONArray(cleanText))
+            if (results.isNotEmpty()) return@withContext results
+        } catch (e: Exception) {
+            lastException = e
+            Log.e(TAG, "searchPlacesAI Gemini also failed: ${e.message}")
         }
-        
-        val root = JSONObject(body)
-        val candidates = root.optJSONArray("candidates") ?: throw Exception("No candidates returned from AI")
-        val contentObj = candidates.getJSONObject(0).optJSONObject("content") ?: throw Exception("AI response blocked. Try another query.")
-        val text = contentObj.getJSONArray("parts").getJSONObject(0).getString("text")
-        
-        val jsonArray = JSONArray(text.trim())
+
+        throw Exception(lastException?.message ?: "Search failed on all providers")
+    }
+
+    private fun parseGroqPlaces(jsonArray: JSONArray): List<PlaceSuggestion> {
         val results = mutableListOf<PlaceSuggestion>()
-        
         for (i in 0 until jsonArray.length()) {
             val obj = jsonArray.getJSONObject(i)
             val vibesArr = obj.optJSONArray("tags") ?: JSONArray()
             val vibes = mutableListOf<String>()
-            for (j in 0 until vibesArr.length()) {
-                vibes.add(vibesArr.getString(j))
-            }
+            for (j in 0 until vibesArr.length()) vibes.add(vibesArr.getString(j))
             results.add(PlaceSuggestion(
                 id = UUID.randomUUID().toString(),
                 name = obj.optString("name", "Unknown"),
@@ -297,8 +415,6 @@ Each object must have:
                 address = obj.optString("address", "")
             ))
         }
-        
-        if (results.isEmpty()) throw Exception("No places were generated for your query.")
-        return@withContext results
+        return results
     }
 }
